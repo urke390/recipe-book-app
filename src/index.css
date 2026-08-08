@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 33% 97%;
+    --foreground: 20 35% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 35% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 35% 14%;
+    --primary: 152 48% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 38 25% 93%;
+    --secondary-foreground: 20 35% 14%;
+    --muted: 36 20% 90%;
+    --muted-foreground: 25 15% 38%;
+    --accent: 35 75% 52%;
+    --accent-foreground: 20 40% 12%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 48% 30%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 85% 45%;
+    --warning-foreground: 0 0% 100%;
+    --border: 36 20% 86%;
+    --input: 36 20% 86%;
+    --ring: 152 48% 30%;
+    --radius: 1rem;
+    --font-heading: 'Heebo', sans-serif;
+    --font-body: 'Heebo', sans-serif;
+    --font-mono: ui-monospace, monospace;
+  }
+
+  .dark {
+    --background: 20 15% 9%;
+    --foreground: 40 20% 92%;
+    --card: 20 14% 12%;
+    --card-foreground: 40 20% 92%;
+    --popover: 20 14% 12%;
+    --popover-foreground: 40 20% 92%;
+    --primary: 152 45% 48%;
+    --primary-foreground: 20 15% 9%;
+    --secondary: 20 12% 18%;
+    --secondary-foreground: 40 20% 92%;
+    --muted: 20 12% 18%;
+    --muted-foreground: 35 10% 65%;
+    --accent: 38 70% 55%;
+    --accent-foreground: 20 15% 9%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 45% 48%;
+    --success-foreground: 20 15% 9%;
+    --warning: 38 80% 55%;
+    --warning-foreground: 20 15% 9%;
+    --border: 20 12% 20%;
+    --input: 20 12% 20%;
+    --ring: 152 45% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    direction: rtl;
+    font-feature-settings: 'tnum' 1;
+    margin: 0;
+  }
+
+  ::selection {
+    @apply bg-primary/20;
+  }
+}
+
+/* Print pages (recipe summaries) render their own full page and hide the
+   app chrome around them - see src/pages/print/*. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-root,
+  #print-root * {
+    visibility: visible;
+  }
+  #print-root {
+    position: absolute;
+    inset: 0;
+  }
+  .no-print {
+    display: none !important;
+  }
+  /* When a print page is opened as a modal (PrintModal.jsx), #print-root
+     sits inside the dialog's fixed-height, clipped scroll area - #print-root's
+     absolute positioning above resolves against that clipped box instead of
+     the full page, so only whatever one screen's worth of content was
+     visible gets printed and every other page is silently cut off. Reset
+     the dialog wrapper and its scroll container back to normal flow so
+     #print-root's containing block is the page itself, same as the
+     standalone (non-modal) print routes. */
+  .print-modal-content,
+  .print-modal-body {
+    position: static !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+}

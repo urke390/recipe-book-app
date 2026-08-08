@@ -1,0 +1,19 @@
+{
+  "name": "ספר מתכונים ביתי",
+  "short_name": "מתכונים",
+  "description": "ניהול מתכונים ביתיים וייצור מודרך שלב-אחר-שלב עם סנכרון בזמן אמת",
+  "start_url": "/recipes",
+  "display": "standalone",
+  "background_color": "#faf6ee",
+  "theme_color": "#1f7a4d",
+  "dir": "rtl",
+  "lang": "he",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
