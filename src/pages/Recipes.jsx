@@ -40,38 +40,6 @@ function RecipeCategoryDialog({ category, onSave, onClose }) {
   )
 }
 
-// Curated tile gradients for recipes without a photo, paired with a simple
-// glyph rather than mismatched emoji.
-const TILE_GRADIENTS = [
-  ['#F3C969', '#E8A33D'],
-  ['#8FBF8A', '#5C9C63'],
-  ['#E8B896', '#D18B5C'],
-  ['#F0D08A', '#D9A441'],
-  ['#A8C98A', '#79A65E'],
-  ['#E3A6A0', '#C97A6E'],
-]
-
-function RecipeGlyph({ color }) {
-  return (
-    <svg width="40" height="40" viewBox="0 0 64 64" fill="none">
-      <path d="M20 12c-3.5 0-6 3-6 6.5 0 3 1.8 5 4 6.3V50a2 2 0 0 0 4 0V24.8c2.2-1.3 4-3.3 4-6.3 0-3.5-2.5-6.5-6-6.5z" fill={color} fillOpacity="0.9" />
-      <path d="M40 12v14c0 2.5-2 4-4.5 4.4V50a2 2 0 0 1-4 0V12h2v12h1.5V12h2v12H38V12h2z" fill={color} fillOpacity="0.9" />
-    </svg>
-  )
-}
-
-function RecipeTile({ recipe, index }) {
-  const [from, to] = TILE_GRADIENTS[index % TILE_GRADIENTS.length]
-  if (recipe.image_url) {
-    return <img src={recipe.image_url} alt={recipe.name} className="w-full h-full object-cover" />
-  }
-  return (
-    <div className="h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}>
-      <RecipeGlyph color="white" />
-    </div>
-  )
-}
-
 export default function Recipes() {
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -295,7 +263,7 @@ export default function Recipes() {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4' : 'space-y-2'}
+                className={viewMode === 'grid' ? 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3' : 'space-y-2'}
               >
                 {filtered.map((recipe, i) => (
                   <Draggable key={recipe.id} draggableId={recipe.id} index={i} isDragDisabled={!reordering}>
@@ -305,21 +273,21 @@ export default function Recipes() {
                           ref={dragProvided.innerRef}
                           {...dragProvided.draggableProps}
                           layout
-                          className={`rounded-2xl group relative flex flex-col items-center text-center border border-border bg-card shadow-soft transition-all duration-200 p-4 ${
+                          className={`rounded-xl group relative flex flex-col items-center text-center border border-border bg-card shadow-soft transition-all duration-200 p-2.5 ${
                             snapshot.isDragging ? 'shadow-card-hover' : 'hover:shadow-card-hover hover:-translate-y-0.5'
                           }`}
                         >
                           {reordering ? (
-                            <div {...dragProvided.dragHandleProps} className="absolute top-2 right-2 p-1.5 rounded-full bg-muted cursor-grab active:cursor-grabbing">
-                              <GripVertical className="w-4 h-4 text-muted-foreground" />
+                            <div {...dragProvided.dragHandleProps} className="absolute top-1 right-1 p-1 rounded-full bg-muted cursor-grab active:cursor-grabbing">
+                              <GripVertical className="w-3.5 h-3.5 text-muted-foreground" />
                             </div>
                           ) : (
                             editor && (
-                              <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <button onClick={(e) => e.stopPropagation()} className="rounded-full bg-card hover:bg-muted p-1.5 shadow-md border border-border flex items-center justify-center">
-                                      <MoreVertical className="w-4 h-4 text-foreground" />
+                                    <button onClick={(e) => e.stopPropagation()} className="rounded-full bg-card hover:bg-muted p-1 shadow-md border border-border flex items-center justify-center">
+                                      <MoreVertical className="w-3.5 h-3.5 text-foreground" />
                                     </button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="start" className="w-40" onClick={(e) => e.stopPropagation()}>
@@ -342,23 +310,11 @@ export default function Recipes() {
                           )}
 
                           <h3
-                            className="font-heading font-bold text-sm leading-tight cursor-pointer w-full px-5 line-clamp-2 min-h-[2.5em] flex items-center justify-center"
+                            className="font-heading font-semibold text-xs leading-tight cursor-pointer w-full py-2 line-clamp-3 min-h-[3em] flex items-center justify-center"
                             onClick={() => !reordering && openRecipe(recipe)}
                           >
                             {recipe.name}
                           </h3>
-
-                          <div className="relative w-28 h-28 mt-3 mb-1 flex-shrink-0">
-                            <div
-                              className="w-full h-full rounded-full overflow-hidden shadow-card ring-4 ring-background cursor-pointer"
-                              onClick={() => !reordering && openRecipe(recipe)}
-                            >
-                              <RecipeTile recipe={recipe} index={i} />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                          </div>
-
-                          {recipe.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{recipe.description}</p>}
                         </motion.div>
                       ) : (
                         <div
@@ -371,9 +327,6 @@ export default function Recipes() {
                               <GripVertical className="w-4 h-4" />
                             </div>
                           )}
-                          <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 cursor-pointer" onClick={() => !reordering && openRecipe(recipe)}>
-                            <RecipeTile recipe={recipe} index={i} />
-                          </div>
                           <div className="flex-1 min-w-0 cursor-pointer" onClick={() => !reordering && openRecipe(recipe)}>
                             <p className="font-semibold text-sm truncate">{recipe.name}</p>
                             {recipe.description && <p className="text-xs text-muted-foreground truncate">{recipe.description}</p>}
