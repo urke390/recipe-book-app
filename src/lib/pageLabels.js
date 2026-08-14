@@ -7,6 +7,7 @@ const PATTERNS = [
   [/^\/recipes/, 'מתכונים'],
   [/^\/production\/[^/]+/, 'מעקב ייצור'],
   [/^\/production/, 'ייצור מודרך'],
+  [/^\/settings\/recipe-categories/, 'קטגוריות מתכונים'],
   [/^\/parameters/, 'פרמטרים'],
   [/^\/units/, 'יחידות מידה'],
   [/^\/alert-sound/, 'התראות'],

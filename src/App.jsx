@@ -11,6 +11,7 @@ import RecipeView from '@/pages/RecipeView'
 import RecipeEditor from '@/pages/RecipeEditor'
 import GuidedProductionList from '@/pages/GuidedProductionList'
 import ProductionRunner from '@/pages/ProductionRunner'
+import RecipeCategorySettings from '@/pages/RecipeCategorySettings'
 import Parameters from '@/pages/Parameters'
 import Units from '@/pages/Units'
 import AlertSound from '@/pages/AlertSound'
@@ -61,6 +62,7 @@ function App() {
             <Route path="/recipes/:id/edit" element={<RecipeEditor />} />
             <Route path="/production" element={<GuidedProductionList />} />
             <Route path="/production/:sessionId" element={<ProductionRunner />} />
+            <Route path="/settings/recipe-categories" element={<RecipeCategorySettings />} />
             <Route path="/parameters" element={<Parameters />} />
             <Route path="/units" element={<Units />} />
             <Route path="/alert-sound" element={<AlertSound />} />

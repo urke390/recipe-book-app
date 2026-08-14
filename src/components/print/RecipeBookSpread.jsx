@@ -110,9 +110,16 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
                 {steps.map((s) => (
                   <li
                     key={s.id}
-                    className={s.type === 'section_header' ? 'list-none font-heading font-bold mt-1' : undefined}
-                    style={s.type === 'section_header' ? { counterIncrement: 'list-item 0' } : undefined}
+                    className={
+                      s.type === 'section_header'
+                        ? 'list-none font-heading font-bold mt-1'
+                        : s.type === 'ingredient_addition'
+                          ? 'list-none pr-3'
+                          : undefined
+                    }
+                    style={s.type === 'section_header' || s.type === 'ingredient_addition' ? { counterIncrement: 'list-item 0' } : undefined}
                   >
+                    {s.type === 'ingredient_addition' && '• '}
                     {getStepDisplayTitle(s)}
                     {s.type === 'ingredient_addition' && s.base_quantity && (
                       <>

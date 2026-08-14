@@ -96,9 +96,16 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
           const renderStep = (s) => (
             <li
               key={s.id}
-              className={s.type === 'section_header' ? 'list-none font-bold' : undefined}
-              style={s.type === 'section_header' ? { counterIncrement: 'list-item 0' } : undefined}
+              className={
+                s.type === 'section_header'
+                  ? 'list-none font-bold'
+                  : s.type === 'ingredient_addition'
+                    ? 'list-none pr-3'
+                    : undefined
+              }
+              style={s.type === 'section_header' || s.type === 'ingredient_addition' ? { counterIncrement: 'list-item 0' } : undefined}
             >
+              {s.type === 'ingredient_addition' && '• '}
               {getStepDisplayTitle(s)}
               {s.type === 'ingredient_addition' && s.base_quantity ? ` — ${parseFloat((s.base_quantity * stepListScaleFactor).toFixed(2))}${s.unit ? ` ${s.unit}` : ''}` : ''}
               {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
