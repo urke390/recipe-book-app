@@ -30,8 +30,6 @@ export default function RecipeView() {
     enabled: !!recipe,
   })
 
-  const { data: categories = [] } = useQuery({ queryKey: ['recipe_categories'], queryFn: () => db.RecipeCategory.list('name') })
-  const category = categories.find((c) => c.id === recipe?.category_id)
   const { data: parameters = [] } = useQuery({ queryKey: ['parameters'], queryFn: () => db.Parameter.list() })
 
   if (recipeLoading) {
@@ -60,10 +58,7 @@ export default function RecipeView() {
           <ChevronRight className="w-5 h-5" />
         </Button>
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl md:text-2xl font-heading font-bold">{recipe.name}</h1>
-            {category && <span className="text-xs px-2 py-0.5 rounded-full border border-border bg-muted text-muted-foreground font-medium flex-shrink-0">{category.name}</span>}
-          </div>
+          <h1 className="text-xl md:text-2xl font-heading font-bold">{recipe.name}</h1>
           {recipe.description && <p className="text-sm text-muted-foreground mt-0.5">{recipe.description}</p>}
         </div>
         <Button variant="outline" size="sm" className="gap-1.5 flex-shrink-0" onClick={() => setPrinting(true)}>
