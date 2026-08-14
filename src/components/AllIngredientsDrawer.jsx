@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ClipboardList } from 'lucide-react'
+import Qty from '@/components/Qty'
 
 // Read-only list of every ingredient in the recipe (scaled), for glancing at
 // everything needed without stepping through the whole guided flow - sits
@@ -28,7 +29,7 @@ export default function AllIngredientsDrawer({ steps, scaleFactor }) {
               <span className="text-sm font-medium">{s.ingredient_name || s.title}</span>
               {s.base_quantity != null && (
                 <span className="text-sm text-muted-foreground flex-shrink-0 tabular-nums">
-                  {(s.base_quantity * (scaleFactor || 1)).toFixed(1)} {s.unit}
+                  <Qty value={s.base_quantity * (scaleFactor || 1)} unit={s.unit} />
                 </span>
               )}
             </div>

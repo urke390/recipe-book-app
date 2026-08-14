@@ -38,6 +38,33 @@ export function getStepDisplayTitle(step) {
   }
 }
 
+// Common cooking fractions (halves/thirds/quarters) - anything else falls
+// back to a plain decimal. Ordered so e.g. 0.5 doesn't get eaten by a wider
+// tolerance band before reaching the exact half match.
+const COMMON_FRACTIONS = [
+  [1 / 3, 1, 3],
+  [2 / 3, 2, 3],
+  [1 / 4, 1, 4],
+  [3 / 4, 3, 4],
+  [1 / 2, 1, 2],
+]
+
+// Splits a decimal quantity into a whole part plus a recognized simple
+// fraction (for <Qty>'s stacked num/line/denom rendering), e.g. 1.75 ->
+// { whole: 1, num: 3, den: 4 }. Returns null when the fractional remainder
+// doesn't match any common cooking fraction, so the caller can fall back to
+// a plain decimal instead of inventing an odd fraction like 7/11.
+export function splitQuantityFraction(value) {
+  if (value == null || Number.isNaN(value)) return null
+  const whole = Math.floor(value + 1e-9)
+  const frac = value - whole
+  if (frac < 0.01) return { whole, num: 0, den: 1 }
+  for (const [dec, num, den] of COMMON_FRACTIONS) {
+    if (Math.abs(frac - dec) < 0.02) return { whole, num, den }
+  }
+  return null
+}
+
 export function formatDuration(seconds) {
   const h = Math.floor(seconds / 3600)
   const m = Math.floor((seconds % 3600) / 60)

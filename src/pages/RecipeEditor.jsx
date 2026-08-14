@@ -24,6 +24,7 @@ import StepRowEditor from '@/components/recipe/StepRowEditor'
 import ParamValueEditor from '@/components/recipe/ParamValueEditor'
 import PrintRecipe from '@/pages/print/PrintRecipe'
 import { getStepDisplayTitle, STEP_TYPE_COLORS } from '@/lib/stepUtils'
+import Qty from '@/components/Qty'
 
 const TABS = [
   { key: 'details', label: 'פרטים' },
@@ -281,7 +282,7 @@ export default function RecipeEditor() {
                               <span className="flex-1 min-w-0 truncate text-sm font-medium">{getStepDisplayTitle(step)}</span>
                               {step.type === 'ingredient_addition' && step.base_quantity && (
                                 <span className="text-xs text-muted-foreground flex-shrink-0">
-                                  {step.base_quantity} {step.unit}
+                                  <Qty value={step.base_quantity} unit={step.unit} />
                                 </span>
                               )}
                               {editor && (

@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Button } from '@/components/ui/button'
 import { List, Check } from 'lucide-react'
 import { STEP_TYPE_LABELS, getStepDisplayTitle } from '@/lib/stepUtils'
+import Qty from '@/components/Qty'
 
 export default function AllStepsDrawer({ steps, currentIndex, scaleFactor, onSelectStep }) {
   const [open, setOpen] = useState(false)
@@ -42,7 +43,12 @@ export default function AllStepsDrawer({ steps, currentIndex, scaleFactor, onSel
                     <p className="text-xs font-semibold truncate">{getStepDisplayTitle(step)}</p>
                     <p className={`text-xs mt-0.5 ${isActive ? 'opacity-70' : 'text-muted-foreground'}`}>
                       {STEP_TYPE_LABELS[step.type]}
-                      {step.type === 'ingredient_addition' && step.base_quantity && ` • ${(step.base_quantity * (scaleFactor || 1)).toFixed(1)} ${step.unit}`}
+                      {step.type === 'ingredient_addition' && step.base_quantity && (
+                        <>
+                          {' • '}
+                          <Qty value={step.base_quantity * (scaleFactor || 1)} unit={step.unit} />
+                        </>
+                      )}
                       {step.type === 'wait_time' && step.duration_minutes && ` • ${step.duration_minutes} דקות`}
                     </p>
                   </div>

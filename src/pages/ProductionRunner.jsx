@@ -14,6 +14,7 @@ import AllIngredientsDrawer from '@/components/AllIngredientsDrawer'
 import CyclesNav from '@/components/production/CyclesNav'
 import PrintRecipe from '@/pages/print/PrintRecipe'
 import { getStepDisplayTitle } from '@/lib/stepUtils'
+import Qty from '@/components/Qty'
 
 function StepContent({ step, scaleFactor, timer, consecutiveIngredients = [] }) {
   const ingredientSteps = step.type === 'ingredient_addition' ? [step, ...consecutiveIngredients] : []
@@ -30,11 +31,13 @@ function StepContent({ step, scaleFactor, timer, consecutiveIngredients = [] }) 
                 return (
                   <div key={ing.id || idx} className="rounded-2xl px-6 py-4 border border-border shadow-soft flex-1 min-w-48">
                     <p className="text-sm text-muted-foreground mb-2">{ing.ingredient_name || ing.title}</p>
-                    <p className="text-4xl font-bold text-primary tabular-nums">{ingCalcQty?.toFixed(1)}</p>
+                    <p className="text-4xl font-bold text-primary tabular-nums">
+                      <Qty value={ingCalcQty} />
+                    </p>
                     <p className="text-lg font-semibold text-foreground mt-1">{ing.unit}</p>
                     {scaleFactor !== 1 && (
                       <p className="text-xs text-muted-foreground mt-2">
-                        ({ing.base_quantity} {ing.unit} × {scaleFactor.toFixed(2)})
+                        (<Qty value={ing.base_quantity} unit={ing.unit} /> × {scaleFactor.toFixed(2)})
                       </p>
                     )}
                     {ing.category_name && <p className="text-xs text-muted-foreground mt-2">קטגוריה: {ing.category_name}</p>}

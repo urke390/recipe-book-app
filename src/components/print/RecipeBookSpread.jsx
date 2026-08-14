@@ -5,6 +5,7 @@ import { db } from '@/api/db'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
+import Qty from '@/components/Qty'
 
 // Static two-page "open book" spread for a single recipe's print preview -
 // no page-flip mechanics (nothing to flip between, it's one recipe), just
@@ -22,7 +23,8 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
   const ingredientRows = ingredientSteps.map((s) => ({
     key: s.id,
     name: s.ingredient_name || s.title,
-    display: s.base_quantity ? `${s.base_quantity} ${s.unit || ''}`.trim() : '',
+    quantity: s.base_quantity,
+    unit: s.unit,
   }))
   const recipeParams = recipe.parameter_values || []
 
@@ -66,7 +68,9 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
                       {ingredientRows.map((row) => (
                         <tr key={row.key} className="border-b border-current/10">
                           <td className="py-1 pl-2">{row.name}</td>
-                          <td className="py-1 text-left font-medium w-24">{row.display}</td>
+                          <td className="py-1 text-left font-medium w-24">
+                            <Qty value={row.quantity} unit={row.unit} />
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -106,7 +110,12 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
                 {steps.map((s) => (
                   <li key={s.id}>
                     {getStepDisplayTitle(s)}
-                    {s.type === 'ingredient_addition' && s.base_quantity ? ` — ${s.base_quantity}${s.unit ? ` ${s.unit}` : ''}` : ''}
+                    {s.type === 'ingredient_addition' && s.base_quantity && (
+                      <>
+                        {' — '}
+                        <Qty value={s.base_quantity} unit={s.unit} />
+                      </>
+                    )}
                     {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
                     {s.instructions && <span className="opacity-70"> ({s.instructions})</span>}
                   </li>

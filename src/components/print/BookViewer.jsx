@@ -6,6 +6,7 @@ import { formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
 import { useBranding } from '@/hooks/useBranding'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import Qty from '@/components/Qty'
 
 const FLIP_MS = 550
 
@@ -23,7 +24,9 @@ function IngredientsPage({ recipe, ingredientRows, recipeParams, parameters }) {
               {ingredientRows.map((row) => (
                 <tr key={row.key} className="border-b border-current/10">
                   <td className="py-1 pl-2">{row.name}</td>
-                  <td className="py-1 text-left font-medium w-24">{row.display}</td>
+                  <td className="py-1 text-left font-medium w-24">
+                    <Qty value={row.quantity} unit={row.unit} />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -65,7 +68,12 @@ function StepsPage({ steps }) {
         {steps.map((s) => (
           <li key={s.id}>
             {getStepDisplayTitle(s)}
-            {s.type === 'ingredient_addition' && s.base_quantity ? ` — ${s.base_quantity}${s.unit ? ` ${s.unit}` : ''}` : ''}
+            {s.type === 'ingredient_addition' && s.base_quantity && (
+              <>
+                {' — '}
+                <Qty value={s.base_quantity} unit={s.unit} />
+              </>
+            )}
             {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
             {s.instructions && <span className="opacity-70"> ({s.instructions})</span>}
           </li>
@@ -80,7 +88,8 @@ function Spread({ recipe, steps, parameters }) {
   const ingredientRows = ingredientSteps.map((s) => ({
     key: s.id,
     name: s.ingredient_name || s.title,
-    display: s.base_quantity ? `${s.base_quantity} ${s.unit || ''}`.trim() : '',
+    quantity: s.base_quantity,
+    unit: s.unit,
   }))
   return (
     <div className="flex flex-col md:flex-row w-full h-full">
