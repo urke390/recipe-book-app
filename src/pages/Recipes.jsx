@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
-import { Plus, Trash2, Copy, Search, BookOpen, MoreVertical, Pencil, Lock, Printer, LayoutGrid, List, GripVertical, Check, X } from 'lucide-react'
+import { Plus, Trash2, Copy, Search, BookOpen, MoreVertical, Pencil, Lock, Printer, LayoutGrid, List, GripVertical, Check, X, ArrowDownAZ, ArrowUpAZ, ArrowUpDown } from 'lucide-react'
 import { db } from '@/api/db'
 import { useEditor } from '@/hooks/useEditor'
 import { Button } from '@/components/ui/button'
@@ -51,6 +51,7 @@ export default function Recipes() {
   const [viewMode, setViewMode] = useState(() => localStorage.getItem('recipes_view_mode') || 'grid')
   const [reordering, setReordering] = useState(false)
   const [localOrder, setLocalOrder] = useState(null) // optimistic order while a drag's persist mutation is in flight
+  const [sortDir, setSortDir] = useState(null) // null (custom order) | 'asc' | 'desc' (alphabetical)
   const [activeCategoryId, setActiveCategoryId] = useState(null)
   const [categoryDialog, setCategoryDialog] = useState(null) // null | 'new' | category row
   const [deleteCategoryId, setDeleteCategoryId] = useState(null)
@@ -63,10 +64,20 @@ export default function Recipes() {
   const filtered = useMemo(() => {
     let base = localOrder || recipes
     if (activeCategoryId) base = base.filter((r) => r.category_id === activeCategoryId)
-    if (!search.trim()) return base
-    const q = search.trim().toLowerCase()
-    return base.filter((r) => r.name?.toLowerCase().includes(q) || r.description?.toLowerCase().includes(q))
-  }, [recipes, localOrder, search, activeCategoryId])
+    if (search.trim()) {
+      const q = search.trim().toLowerCase()
+      base = base.filter((r) => r.name?.toLowerCase().includes(q) || r.description?.toLowerCase().includes(q))
+    }
+    if (sortDir) {
+      base = [...base].sort((a, b) => (sortDir === 'asc' ? 1 : -1) * (a.name || '').localeCompare(b.name || '', 'he'))
+    }
+    return base
+  }, [recipes, localOrder, search, activeCategoryId, sortDir])
+
+  const cycleSort = () => {
+    setReordering(false)
+    setSortDir((d) => (d === null ? 'asc' : d === 'asc' ? 'desc' : null))
+  }
 
   const saveCategoryMutation = useMutation({
     mutationFn: (name) => (categoryDialog?.id ? db.RecipeCategory.update(categoryDialog.id, { name }) : db.RecipeCategory.create({ name })),
@@ -151,11 +162,22 @@ export default function Recipes() {
               <List className="w-4 h-4" />
             </button>
           </div>
+          <Button
+            variant={sortDir ? 'default' : 'outline'}
+            size="icon"
+            onClick={cycleSort}
+            title={sortDir === 'asc' ? 'מסודר א-ת (לחץ להפוך ת-א)' : sortDir === 'desc' ? 'מסודר ת-א (לחץ לביטול המיון)' : 'מיין לפי א-ב'}
+          >
+            {sortDir === 'asc' ? <ArrowDownAZ className="w-4 h-4" /> : sortDir === 'desc' ? <ArrowUpAZ className="w-4 h-4" /> : <ArrowUpDown className="w-4 h-4" />}
+          </Button>
           {editor && (
             <Button
               variant={reordering ? 'default' : 'outline'}
               size="icon"
-              onClick={() => setReordering((v) => !v)}
+              onClick={() => {
+                setSortDir(null)
+                setReordering((v) => !v)
+              }}
               title={reordering ? 'סיים סידור מחדש' : 'שנה את סדר המתכונים'}
               disabled={!!search.trim()}
             >
