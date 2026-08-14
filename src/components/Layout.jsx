@@ -1,9 +1,10 @@
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { BookOpen, ChefHat, Tag, Sliders, Ruler, Settings, Bell, KeyRound, MessageSquareText, Menu } from 'lucide-react'
+import { BookOpen, ChefHat, Tag, Sliders, Ruler, Settings, Bell, KeyRound, MessageSquareText, Palette, Menu } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { db } from '@/api/db'
 import { useEditor } from '@/hooks/useEditor'
+import { useBranding } from '@/hooks/useBranding'
 import EditCodeDialog from '@/components/EditCodeDialog'
 import FeedbackWidget from '@/components/FeedbackWidget'
 import GlobalTimerWatcher from '@/components/GlobalTimerWatcher'
@@ -24,10 +25,16 @@ const settingsItems = [
 export default function Layout() {
   const location = useLocation()
   const { editor } = useEditor()
+  const { branding } = useBranding()
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const visibleSettingsItems = editor
-    ? [...settingsItems, { path: '/settings/edit-code', label: 'קוד עריכה', icon: KeyRound }, { path: '/settings/feedback', label: 'הערות ומשוב', icon: MessageSquareText }]
+    ? [
+        ...settingsItems,
+        { path: '/settings/edit-code', label: 'קוד עריכה', icon: KeyRound },
+        { path: '/settings/feedback', label: 'הערות ומשוב', icon: MessageSquareText },
+        { path: '/settings/branding', label: 'עיצוב', icon: Palette },
+      ]
     : settingsItems
 
   const { data: activeSessions = [] } = useQuery({
@@ -42,12 +49,10 @@ export default function Layout() {
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       <header
         className="hidden md:flex items-center justify-center px-6 h-16 z-50 shadow-sm flex-shrink-0"
-        style={{ background: 'linear-gradient(135deg, hsl(152 48% 22%), hsl(152 45% 32%))' }}
+        style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' }}
       >
         <nav className="flex items-center gap-2 w-full max-w-5xl">
-          <span className="font-heading font-bold text-white text-lg ml-4 flex items-center gap-2">
-            ספר מתכונים ביתי
-          </span>
+          <span className="font-heading font-bold text-white text-lg ml-4 flex items-center gap-2">{branding.title}</span>
           {navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.path)
@@ -99,10 +104,10 @@ export default function Layout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <header
           className="md:hidden flex-shrink-0 z-50 flex items-center justify-between px-4 h-14 shadow-md"
-          style={{ background: 'linear-gradient(135deg, hsl(152 48% 22%), hsl(152 45% 32%))' }}
+          style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' }}
         >
           <div className="flex items-center gap-2.5">
-            <span className="font-heading font-bold text-sm text-white">ספר מתכונים ביתי</span>
+            <span className="font-heading font-bold text-sm text-white">{branding.title}</span>
           </div>
           <div className="flex items-center gap-1">
             <EditCodeDialog />
@@ -151,9 +156,7 @@ export default function Layout() {
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent side="right" className="w-72 flex flex-col">
           <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              ספר מתכונים ביתי
-            </SheetTitle>
+            <SheetTitle className="flex items-center gap-2">{branding.title}</SheetTitle>
           </SheetHeader>
           <nav className="flex flex-col gap-1 mt-4">
             {visibleSettingsItems.map((item) => (

@@ -1,4 +1,4 @@
-import { STEP_TYPE_LABELS, formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
+import { formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
 
 // Static two-page "open book" spread for a single recipe's print preview -
 // no page-flip mechanics (nothing to flip between, it's one recipe), just
@@ -75,7 +75,7 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
             <ol className="text-sm space-y-2 list-decimal pr-5">
               {steps.map((s) => (
                 <li key={s.id}>
-                  <span className="opacity-50 text-xs">[{STEP_TYPE_LABELS[s.type]}]</span> {getStepDisplayTitle(s)}
+                  {getStepDisplayTitle(s)}
                   {s.type === 'ingredient_addition' && s.base_quantity ? ` — ${s.base_quantity}${s.unit ? ` ${s.unit}` : ''}` : ''}
                   {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
                   {s.instructions && <span className="opacity-70"> ({s.instructions})</span>}

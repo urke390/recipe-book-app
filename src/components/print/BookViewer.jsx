@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { ChevronRight, ChevronLeft, BookOpen } from 'lucide-react'
-import { STEP_TYPE_LABELS, formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
+import { formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
+import { useBranding } from '@/hooks/useBranding'
 
 const FLIP_MS = 550
 
@@ -62,7 +63,7 @@ function StepsPage({ steps }) {
       <ol className="text-sm space-y-2 list-decimal pr-5">
         {steps.map((s) => (
           <li key={s.id}>
-            <span className="opacity-50 text-xs">[{STEP_TYPE_LABELS[s.type]}]</span> {getStepDisplayTitle(s)}
+            {getStepDisplayTitle(s)}
             {s.type === 'ingredient_addition' && s.base_quantity ? ` — ${s.base_quantity}${s.unit ? ` ${s.unit}` : ''}` : ''}
             {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
             {s.instructions && <span className="opacity-70"> ({s.instructions})</span>}
@@ -104,6 +105,7 @@ function Spread({ recipe, steps, parameters }) {
 // rotates away around the vertical center spine; backface-visibility hides
 // it past 90°, revealing the new spread that was underneath all along.
 export default function BookViewer({ recipes, stepsByRecipe, parameters }) {
+  const { branding } = useBranding()
   const [opened, setOpened] = useState(false)
   const [index, setIndex] = useState(0)
   const [overlay, setOverlay] = useState(null) // { index, rotated }
@@ -133,7 +135,7 @@ export default function BookViewer({ recipes, stepsByRecipe, parameters }) {
             <button onClick={() => setOpened(true)} className="book-page w-full h-full block relative shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm">
               <div className="book-page-inner book-cover">
                 <BookOpen className="w-12 h-12 mb-4 opacity-80" />
-                <h1 className="font-heading font-bold text-3xl text-center">ספר מתכונים ביתי</h1>
+                <h1 className="font-heading font-bold text-3xl text-center">{branding.title}</h1>
                 <p className="text-sm opacity-80 mt-3">לחץ לפתיחה</p>
               </div>
             </button>
@@ -168,14 +170,14 @@ export default function BookViewer({ recipes, stepsByRecipe, parameters }) {
 
       {opened && total > 0 && (
         <div className="flex items-center gap-4">
-          <button onClick={() => flip('next')} className="p-2 rounded-full bg-card border border-border shadow-soft hover:bg-muted transition-colors" title="הדף הבא">
-            <ChevronLeft className="w-4 h-4" />
+          <button onClick={() => flip('prev')} className="p-2 rounded-full bg-card border border-border shadow-soft hover:bg-muted transition-colors" title="הדף הקודם">
+            <ChevronRight className="w-4 h-4" />
           </button>
           <span dir="ltr" className="text-xs text-muted-foreground tabular-nums">
             {index + 1} / {total}
           </span>
-          <button onClick={() => flip('prev')} className="p-2 rounded-full bg-card border border-border shadow-soft hover:bg-muted transition-colors" title="הדף הקודם">
-            <ChevronRight className="w-4 h-4" />
+          <button onClick={() => flip('next')} className="p-2 rounded-full bg-card border border-border shadow-soft hover:bg-muted transition-colors" title="הדף הבא">
+            <ChevronLeft className="w-4 h-4" />
           </button>
         </div>
       )}

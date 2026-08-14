@@ -1,4 +1,4 @@
-import { STEP_TYPE_LABELS, formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
+import { formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
 
 // One recipe's printable content: ingredients (scaled), full step list, and
 // parameter targets.
@@ -93,7 +93,7 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
         {(() => {
           const renderStep = (s) => (
             <li key={s.id}>
-              <span className="opacity-60 text-xs">[{STEP_TYPE_LABELS[s.type]}]</span> {getStepDisplayTitle(s)}
+              {getStepDisplayTitle(s)}
               {s.type === 'ingredient_addition' && s.base_quantity ? ` — ${parseFloat((s.base_quantity * stepListScaleFactor).toFixed(2))}${s.unit ? ` ${s.unit}` : ''}` : ''}
               {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
               {s.instructions && <span className="opacity-70"> ({s.instructions})</span>}

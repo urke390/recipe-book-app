@@ -61,4 +61,5 @@ export const db = {
   RecipeStep: entity('recipe_steps'),
   ProductionSession: entity('production_sessions'),
   FeedbackNote: entity('feedback_notes'),
+  Branding: entity('app_branding'),
 }
