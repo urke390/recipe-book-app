@@ -52,8 +52,6 @@ function entity(table) {
 }
 
 export const db = {
-  Category: entity('categories'),
-  Ingredient: entity('ingredients'),
   Parameter: entity('parameters'),
   Unit: entity('units'),
   Recipe: entity('recipes'),

@@ -55,7 +55,7 @@ export default function RecipeView() {
 
   return (
     <div className="p-4 md:p-8 max-w-3xl mx-auto w-full">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-3 bg-background/95 backdrop-blur-sm flex items-center gap-3 mb-6">
         <Button variant="ghost" size="icon" onClick={() => navigate('/recipes')}>
           <ChevronRight className="w-5 h-5" />
         </Button>

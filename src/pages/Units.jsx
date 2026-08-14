@@ -36,10 +36,9 @@ function UnitDialog({ unit, onSave, onClose }) {
 }
 
 // Manages the `units` table backing every unit picker in the app
-// (StepRowEditor's ingredient/step unit select, Categories' ingredient
-// default-unit select) - a plain text field on recipe_steps/ingredients,
-// not a foreign key, so renaming or deleting a unit here never breaks an
-// existing recipe's already-stored value.
+// (StepRowEditor's ingredient/step unit select) - a plain text field on
+// recipe_steps, not a foreign key, so renaming or deleting a unit here
+// never breaks an existing recipe's already-stored value.
 export default function Units() {
   const { toast } = useToast()
   const { editor } = useEditor()

@@ -66,7 +66,11 @@ function StepsPage({ steps }) {
       <h3 className="font-heading font-semibold text-base mb-3">שלבי הכנה</h3>
       <ol className="text-sm space-y-2 list-decimal pr-5">
         {steps.map((s) => (
-          <li key={s.id} className={s.type === 'section_header' ? 'font-heading font-bold mt-1' : undefined}>
+          <li
+            key={s.id}
+            className={s.type === 'section_header' ? 'list-none font-heading font-bold mt-1' : undefined}
+            style={s.type === 'section_header' ? { counterIncrement: 'list-item 0' } : undefined}
+          >
             {getStepDisplayTitle(s)}
             {s.type === 'ingredient_addition' && s.base_quantity && (
               <>

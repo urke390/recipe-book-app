@@ -48,7 +48,7 @@ export default function Recipes() {
   const [search, setSearch] = useState('')
   const [deleteId, setDeleteId] = useState(null)
   const [showPrintAll, setShowPrintAll] = useState(false)
-  const [viewMode, setViewMode] = useState(() => localStorage.getItem('recipes_view_mode') || 'grid')
+  const [viewMode, setViewMode] = useState(() => localStorage.getItem('recipes_view_mode') || 'list')
   const [reordering, setReordering] = useState(false)
   const [localOrder, setLocalOrder] = useState(null) // optimistic order while a drag's persist mutation is in flight
   const [sortDir, setSortDir] = useState(null) // null (custom order) | 'asc' | 'desc' (alphabetical)

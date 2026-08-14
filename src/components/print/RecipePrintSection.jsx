@@ -94,7 +94,11 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
         <h3 className="text-lg font-bold mb-2">שלבי הכנה</h3>
         {(() => {
           const renderStep = (s) => (
-            <li key={s.id} className={s.type === 'section_header' ? 'font-bold' : undefined}>
+            <li
+              key={s.id}
+              className={s.type === 'section_header' ? 'list-none font-bold' : undefined}
+              style={s.type === 'section_header' ? { counterIncrement: 'list-item 0' } : undefined}
+            >
               {getStepDisplayTitle(s)}
               {s.type === 'ingredient_addition' && s.base_quantity ? ` — ${parseFloat((s.base_quantity * stepListScaleFactor).toFixed(2))}${s.unit ? ` ${s.unit}` : ''}` : ''}
               {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
