@@ -73,17 +73,21 @@ function StepsPage({ steps }) {
   )
 }
 
+function ingredientRowsFor(steps) {
+  return steps
+    .filter((s) => s.type === 'ingredient_addition')
+    .map((s) => ({
+      key: s.id,
+      name: s.ingredient_name || s.title,
+      display: s.base_quantity ? `${s.base_quantity} ${s.unit || ''}`.trim() : '',
+    }))
+}
+
 function Spread({ recipe, steps, parameters }) {
-  const ingredientSteps = steps.filter((s) => s.type === 'ingredient_addition')
-  const ingredientRows = ingredientSteps.map((s) => ({
-    key: s.id,
-    name: s.ingredient_name || s.title,
-    display: s.base_quantity ? `${s.base_quantity} ${s.unit || ''}`.trim() : '',
-  }))
   return (
     <div className="flex w-full h-full">
       <div className="book-page page-right flex-1 border-l border-black/10">
-        <IngredientsPage recipe={recipe} ingredientRows={ingredientRows} recipeParams={recipe.parameter_values || []} parameters={parameters} />
+        <IngredientsPage recipe={recipe} ingredientRows={ingredientRowsFor(steps)} recipeParams={recipe.parameter_values || []} parameters={parameters} />
       </div>
       <div className="book-page page-left flex-1">
         <StepsPage steps={steps} />
@@ -99,26 +103,32 @@ function Spread({ recipe, steps, parameters }) {
 // not a child of this node"). This trades away drag-to-flip/corner-curl for
 // something fully under React's control and safe with StrictMode.
 //
-// Mechanic: the outgoing spread sits in an absolutely-positioned overlay
-// exactly on top of the (already-updated) base spread underneath, then
-// rotates away around the vertical center spine; backface-visibility hides
-// it past 90°, revealing the new spread that was underneath all along.
+// Mechanic: only the single page closest to the spine actually turns - not
+// the whole spread as one rigid card - hinged at its own spine edge
+// (transform-origin), so it visually sweeps across and over the opposite
+// page as it rotates, the way a real leaf turns. The other page never
+// moves. Base content underneath is already updated to the target recipe
+// before the rotation starts, so once the turning page passes 90° and
+// disappears (backface-visibility: hidden), the next spread is already
+// sitting there waiting.
 export default function BookViewer({ recipes, stepsByRecipe, parameters }) {
   const [opened, setOpened] = useState(false)
   const [index, setIndex] = useState(0)
-  const [overlay, setOverlay] = useState(null) // { index, rotated }
+  const [turning, setTurning] = useState(null) // { dir, recipe, steps, rotated }
   const timerRef = useRef(null)
 
   const total = recipes.length
 
   const flip = (dir) => {
-    if (overlay || total === 0) return
+    if (turning || total === 0) return
+    const fromIndex = index
     const nextIndex = dir === 'next' ? (index + 1) % total : (index - 1 + total) % total
-    setOverlay({ index, angle: dir === 'next' ? -180 : 180, rotated: false })
+    const fromRecipe = recipes[fromIndex]
+    setTurning({ dir, recipe: fromRecipe, steps: stepsByRecipe[fromRecipe.id] || [], rotated: false })
     setIndex(nextIndex)
-    requestAnimationFrame(() => requestAnimationFrame(() => setOverlay((o) => (o ? { ...o, rotated: true } : o))))
+    requestAnimationFrame(() => requestAnimationFrame(() => setTurning((t) => (t ? { ...t, rotated: true } : t))))
     clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => setOverlay(null), FLIP_MS)
+    timerRef.current = setTimeout(() => setTurning(null), FLIP_MS)
   }
 
   const current = recipes[index]
@@ -149,19 +159,34 @@ export default function BookViewer({ recipes, stepsByRecipe, parameters }) {
             <div className="absolute inset-0 shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm overflow-hidden">
               {current && <Spread recipe={current} steps={stepsByRecipe[current.id] || []} parameters={parameters} />}
             </div>
-            {overlay && recipes[overlay.index] && (
-              <div
-                className="absolute inset-0 shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm overflow-hidden"
-                style={{
-                  transformOrigin: 'center',
-                  backfaceVisibility: 'hidden',
-                  transform: `rotateY(${overlay.rotated ? overlay.angle : 0}deg)`,
-                  transition: `transform ${FLIP_MS}ms ease-in-out`,
-                }}
-              >
-                <Spread recipe={recipes[overlay.index]} steps={stepsByRecipe[recipes[overlay.index].id] || []} parameters={parameters} />
-              </div>
-            )}
+            {turning &&
+              (turning.dir === 'next' ? (
+                <div
+                  className="book-page page-left absolute inset-y-0 left-0 shadow-[4px_0_12px_hsl(20_35%_14%/0.3)]"
+                  style={{
+                    width: '50%',
+                    transformOrigin: 'right center',
+                    backfaceVisibility: 'hidden',
+                    transform: `rotateY(${turning.rotated ? -180 : 0}deg)`,
+                    transition: `transform ${FLIP_MS}ms ease-in-out`,
+                  }}
+                >
+                  <StepsPage steps={turning.steps} />
+                </div>
+              ) : (
+                <div
+                  className="book-page page-right absolute inset-y-0 right-0 shadow-[-4px_0_12px_hsl(20_35%_14%/0.3)]"
+                  style={{
+                    width: '50%',
+                    transformOrigin: 'left center',
+                    backfaceVisibility: 'hidden',
+                    transform: `rotateY(${turning.rotated ? 180 : 0}deg)`,
+                    transition: `transform ${FLIP_MS}ms ease-in-out`,
+                  }}
+                >
+                  <IngredientsPage recipe={turning.recipe} ingredientRows={ingredientRowsFor(turning.steps)} recipeParams={turning.recipe.parameter_values || []} parameters={parameters} />
+                </div>
+              ))}
           </>
         )}
       </div>
