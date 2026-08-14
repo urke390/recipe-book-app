@@ -5,10 +5,9 @@ import { ChevronRight, Pencil, ChefHat, Printer } from 'lucide-react'
 import { db } from '@/api/db'
 import { useEditor } from '@/hooks/useEditor'
 import { Button } from '@/components/ui/button'
-import ParametersPanel from '@/components/production/ParametersPanel'
+import RecipeBookSpread from '@/components/print/RecipeBookSpread'
 import StartGuidedProductionModal from '@/components/StartGuidedProductionModal'
 import PrintRecipe from '@/pages/print/PrintRecipe'
-import { getStepDisplayTitle, STEP_TYPE_COLORS } from '@/lib/stepUtils'
 
 // Read-only recipe view: ingredients, steps and parameters for reading
 // through a recipe. Entering guided production only happens via the
@@ -33,6 +32,7 @@ export default function RecipeView() {
 
   const { data: categories = [] } = useQuery({ queryKey: ['recipe_categories'], queryFn: () => db.RecipeCategory.list('name') })
   const category = categories.find((c) => c.id === recipe?.category_id)
+  const { data: parameters = [] } = useQuery({ queryKey: ['parameters'], queryFn: () => db.Parameter.list() })
 
   if (recipeLoading) {
     return (
@@ -84,39 +84,8 @@ export default function RecipeView() {
         </div>
       )}
 
-      <div className="bg-card border border-border rounded-2xl p-5 shadow-soft mb-6">
-        <p className="text-sm text-muted-foreground">
-          כמות בסיס: <span className="font-medium text-foreground">{recipe.base_quantity} {recipe.base_unit}</span>
-        </p>
-      </div>
-
-      <ParametersPanel parameterIds={recipe.parameter_ids} parameterValues={recipe.parameter_values} />
-
       <div className="mb-8">
-        <h2 className="text-lg font-heading font-bold mb-3">שלבי הכנה</h2>
-        {steps.length === 0 ? (
-          <p className="text-center text-muted-foreground py-10 text-sm">אין שלבים עדיין</p>
-        ) : (
-          <ol className="space-y-2">
-            {steps.map((step, idx) => (
-              <li key={step.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border bg-card shadow-soft">
-                <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-secondary text-secondary-foreground">{idx + 1}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${STEP_TYPE_COLORS[step.type]}`}>
-                  {step.type === 'ingredient_addition' ? 'רכיב' : step.type === 'wait_time' ? 'המתנה' : 'פעולה'}
-                </span>
-                <span className="flex-1 min-w-0 text-sm font-medium">
-                  {getStepDisplayTitle(step)}
-                  {step.instructions && <span className="text-muted-foreground font-normal"> ({step.instructions})</span>}
-                </span>
-                {step.type === 'ingredient_addition' && step.base_quantity && (
-                  <span className="text-xs text-muted-foreground flex-shrink-0">
-                    {step.base_quantity} {step.unit}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ol>
-        )}
+        <RecipeBookSpread recipe={recipe} steps={steps} parameters={parameters} />
       </div>
 
       <Button size="lg" className="w-full gap-2 shadow-soft" onClick={() => setStarting(true)}>
