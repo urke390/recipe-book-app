@@ -3,15 +3,42 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
-import { Plus, Trash2, Copy, Search, BookOpen, MoreVertical, Pencil, Lock, Printer, LayoutGrid, List, GripVertical, Check } from 'lucide-react'
+import { Plus, Trash2, Copy, Search, BookOpen, MoreVertical, Pencil, Lock, Printer, LayoutGrid, List, GripVertical, Check, X } from 'lucide-react'
 import { db } from '@/api/db'
 import { useEditor } from '@/hooks/useEditor'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import PrintAllRecipes from '@/pages/print/PrintAllRecipes'
+
+function RecipeCategoryDialog({ category, onSave, onClose }) {
+  const [name, setName] = useState(category?.name || '')
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>{category ? 'עריכת קטגוריה' : 'קטגוריה חדשה'}</DialogTitle>
+        </DialogHeader>
+        <div className="py-2">
+          <Label className="mb-1 block">שם קטגוריה *</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="לדוגמה: עוגות" autoFocus />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            ביטול
+          </Button>
+          <Button onClick={() => onSave(name)} disabled={!name.trim()}>
+            שמור
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 // Curated tile gradients for recipes without a photo, paired with a simple
 // glyph rather than mismatched emoji.
@@ -56,17 +83,42 @@ export default function Recipes() {
   const [viewMode, setViewMode] = useState(() => localStorage.getItem('recipes_view_mode') || 'grid')
   const [reordering, setReordering] = useState(false)
   const [localOrder, setLocalOrder] = useState(null) // optimistic order while a drag's persist mutation is in flight
+  const [activeCategoryId, setActiveCategoryId] = useState(null)
+  const [categoryDialog, setCategoryDialog] = useState(null) // null | 'new' | category row
+  const [deleteCategoryId, setDeleteCategoryId] = useState(null)
 
   useEffect(() => localStorage.setItem('recipes_view_mode', viewMode), [viewMode])
 
   const { data: recipes = [], isLoading } = useQuery({ queryKey: ['recipes'], queryFn: () => db.Recipe.list('order') })
+  const { data: categories = [] } = useQuery({ queryKey: ['recipe_categories'], queryFn: () => db.RecipeCategory.list('name') })
 
   const filtered = useMemo(() => {
-    const base = localOrder || recipes
+    let base = localOrder || recipes
+    if (activeCategoryId) base = base.filter((r) => r.category_id === activeCategoryId)
     if (!search.trim()) return base
     const q = search.trim().toLowerCase()
     return base.filter((r) => r.name?.toLowerCase().includes(q) || r.description?.toLowerCase().includes(q))
-  }, [recipes, localOrder, search])
+  }, [recipes, localOrder, search, activeCategoryId])
+
+  const saveCategoryMutation = useMutation({
+    mutationFn: (name) => (categoryDialog?.id ? db.RecipeCategory.update(categoryDialog.id, { name }) : db.RecipeCategory.create({ name })),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipe_categories'] })
+      setCategoryDialog(null)
+      toast({ title: 'הקטגוריה נשמרה' })
+    },
+  })
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id) => db.RecipeCategory.delete(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['recipe_categories'] })
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      if (activeCategoryId === id) setActiveCategoryId(null)
+      setDeleteCategoryId(null)
+      toast({ title: 'הקטגוריה נמחקה' })
+    },
+  })
 
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
@@ -160,9 +212,65 @@ export default function Recipes() {
         </div>
       </div>
 
-      <div className="relative mb-6 max-w-sm">
+      <div className="relative mb-4 max-w-sm">
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="חיפוש מתכון..." className="pr-9" />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <button
+          onClick={() => setActiveCategoryId(null)}
+          className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
+            !activeCategoryId ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-muted-foreground hover:border-primary/50'
+          }`}
+        >
+          הכל
+        </button>
+        {categories.map((c) => (
+          <div key={c.id} className="group relative">
+            <button
+              onClick={() => setActiveCategoryId(c.id === activeCategoryId ? null : c.id)}
+              className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
+                activeCategoryId === c.id ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-muted-foreground hover:border-primary/50'
+              } ${editor ? 'pl-6' : ''}`}
+            >
+              {c.name}
+            </button>
+            {editor && (
+              <span className="absolute left-1 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-0.5">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setCategoryDialog(c)
+                  }}
+                  className="p-0.5 rounded-full hover:bg-black/10"
+                  title="שינוי שם"
+                >
+                  <Pencil className="w-2.5 h-2.5" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setDeleteCategoryId(c.id)
+                  }}
+                  className="p-0.5 rounded-full hover:bg-black/10"
+                  title="מחיקה"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              </span>
+            )}
+          </div>
+        ))}
+        {editor && (
+          <button
+            onClick={() => setCategoryDialog('new')}
+            className="text-xs px-3 py-1.5 rounded-full border border-dashed border-border text-muted-foreground hover:border-primary/50 flex items-center gap-1"
+          >
+            <Plus className="w-3 h-3" />
+            קטגוריה
+          </button>
+        )}
       </div>
 
       {isLoading ? (
@@ -306,6 +414,29 @@ export default function Recipes() {
       )}
 
       {showPrintAll && <PrintAllRecipes onClose={() => setShowPrintAll(false)} />}
+
+      {categoryDialog && (
+        <RecipeCategoryDialog
+          category={categoryDialog !== 'new' ? categoryDialog : null}
+          onSave={(name) => saveCategoryMutation.mutate(name)}
+          onClose={() => setCategoryDialog(null)}
+        />
+      )}
+
+      <AlertDialog open={!!deleteCategoryId} onOpenChange={() => setDeleteCategoryId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>מחיקת קטגוריה</AlertDialogTitle>
+            <AlertDialogDescription>המתכונים בקטגוריה זו לא יימחקו, אך יישארו ללא קטגוריה.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>ביטול</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteCategoryMutation.mutate(deleteCategoryId)} className="bg-destructive hover:bg-destructive/90">
+              מחק
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>

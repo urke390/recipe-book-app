@@ -8,6 +8,7 @@ import { useEditor } from '@/hooks/useEditor'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import {
   AlertDialog,
@@ -50,6 +51,7 @@ export default function RecipeEditor() {
   const [imageUrl, setImageUrl] = useState('')
   const [baseQuantity, setBaseQuantity] = useState(4)
   const [baseUnit, setBaseUnit] = useState('מנות')
+  const [categoryId, setCategoryId] = useState(null)
   const [addingStep, setAddingStep] = useState(false)
   const [editingStepId, setEditingStepId] = useState(null)
   const [deleteStepId, setDeleteStepId] = useState(null)
@@ -69,8 +71,11 @@ export default function RecipeEditor() {
       setImageUrl(recipe.image_url || '')
       setBaseQuantity(recipe.base_quantity || 4)
       setBaseUnit(recipe.base_unit || 'מנות')
+      setCategoryId(recipe.category_id || null)
     }
   }, [recipe?.id])
+
+  const { data: recipeCategories = [] } = useQuery({ queryKey: ['recipe_categories'], queryFn: () => db.RecipeCategory.list('name') })
 
   const { data: steps = [] } = useQuery({
     queryKey: ['steps', id],
@@ -86,7 +91,7 @@ export default function RecipeEditor() {
 
   const saveDetailsMutation = useMutation({
     mutationFn: async () => {
-      const data = { name, description: description || null, image_url: imageUrl || null, base_quantity: parseFloat(baseQuantity) || 4, base_unit: baseUnit }
+      const data = { name, description: description || null, image_url: imageUrl || null, base_quantity: parseFloat(baseQuantity) || 4, base_unit: baseUnit, category_id: categoryId }
       if (isNew) return db.Recipe.create(data)
       return db.Recipe.update(id, data)
     },
@@ -225,6 +230,22 @@ export default function RecipeEditor() {
           <div>
             <Label className="mb-1 block">קישור לתמונה</Label>
             <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." disabled={!editor} dir="ltr" />
+          </div>
+          <div>
+            <Label className="mb-1 block">קטגוריה</Label>
+            <Select value={categoryId || 'none'} onValueChange={(v) => setCategoryId(v === 'none' ? null : v)} disabled={!editor}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">ללא קטגוריה</SelectItem>
+                {recipeCategories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

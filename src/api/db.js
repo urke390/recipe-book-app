@@ -56,6 +56,7 @@ export const db = {
   Ingredient: entity('ingredients'),
   Parameter: entity('parameters'),
   Recipe: entity('recipes'),
+  RecipeCategory: entity('recipe_categories'),
   RecipeStep: entity('recipe_steps'),
   ProductionSession: entity('production_sessions'),
   FeedbackNote: entity('feedback_notes'),
