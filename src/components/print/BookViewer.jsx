@@ -82,8 +82,8 @@ function Spread({ recipe, steps, parameters }) {
     display: s.base_quantity ? `${s.base_quantity} ${s.unit || ''}`.trim() : '',
   }))
   return (
-    <div className="flex w-full h-full">
-      <div className="book-page page-right flex-1 border-l border-black/10">
+    <div className="flex flex-col md:flex-row w-full h-full">
+      <div className="book-page page-right flex-1 border-b md:border-b-0 md:border-l border-black/10">
         <IngredientsPage recipe={recipe} ingredientRows={ingredientRows} recipeParams={recipe.parameter_values || []} parameters={parameters} />
       </div>
       <div className="book-page page-left flex-1">
@@ -127,7 +127,7 @@ export default function BookViewer({ recipes, stepsByRecipe, parameters }) {
 
   return (
     <div className="flex flex-col items-center gap-3 py-4">
-      <div className="relative w-full max-w-3xl" style={{ height: 560, perspective: 2000 }}>
+      <div className="relative w-full max-w-3xl h-[680px] md:h-[560px]" style={{ perspective: 2000 }}>
         {!opened ? (
           <>
             <div className="book-stack-edge right" />

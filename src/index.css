@@ -113,6 +113,22 @@
   left: -8px;
   border-radius: 4px 0 0 4px;
 }
+/* Below md, the spread stacks vertically (ingredients above steps) instead
+   of sitting side by side - the spine shadow and fore-edge stack strips are
+   only meaningful for a horizontal spread, so both are dropped in favor of
+   plain, more legible pages. */
+@media (max-width: 767px) {
+  .book-page.page-right,
+  .book-page.page-left {
+    background-image: none;
+  }
+  .book-stack-edge {
+    display: none;
+  }
+  .book-page-inner {
+    padding: 1.25rem 1rem;
+  }
+}
 .book-page-inner {
   height: 100%;
   overflow-y: auto;

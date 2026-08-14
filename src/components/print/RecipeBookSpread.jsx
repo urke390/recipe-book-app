@@ -19,8 +19,8 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
       <div className="relative w-full max-w-3xl">
         <div className="book-stack-edge right" />
         <div className="book-stack-edge left" />
-        <div className="book-open-animation flex w-full shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm overflow-hidden" style={{ minHeight: 500 }}>
-        <div className="book-page page-right flex-1 border-l border-black/10">
+        <div className="book-open-animation flex flex-col md:flex-row w-full shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm overflow-hidden" style={{ minHeight: 500 }}>
+        <div className="book-page page-right flex-1 border-b md:border-b-0 md:border-l border-black/10">
           <div className="book-page-inner">
             <h2 className="font-heading font-bold text-2xl mb-1">{recipe.name}</h2>
             {recipe.description && <p className="text-sm opacity-70 mb-3">{recipe.description}</p>}
