@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import ParametersPanel from '@/components/production/ParametersPanel'
 import TimerDisplay from '@/components/production/TimerDisplay'
 import AllStepsDrawer from '@/components/AllStepsDrawer'
+import AllIngredientsDrawer from '@/components/AllIngredientsDrawer'
 import CyclesNav from '@/components/production/CyclesNav'
 import PrintRecipe from '@/pages/print/PrintRecipe'
 import { getStepDisplayTitle } from '@/lib/stepUtils'
@@ -291,7 +292,8 @@ export default function ProductionRunner() {
           )}
         </div>
         <AllStepsDrawer steps={visibleSteps} currentIndex={currentIndex} scaleFactor={scaleFactor} onSelectStep={(idx) => navigateMutation.mutate(idx)} />
-        <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => setPrinting(true)} title="כל הרכיבים">
+        <AllIngredientsDrawer steps={visibleSteps} scaleFactor={scaleFactor} />
+        <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => setPrinting(true)} title="הדפס">
           <Printer className="w-5 h-5" />
         </Button>
         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive flex-shrink-0" onClick={() => setShowCancel(true)}>

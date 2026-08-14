@@ -9,10 +9,7 @@ function IngredientsPage({ recipe, ingredientRows, recipeParams, parameters }) {
   return (
     <div className="book-page-inner">
       <h2 className="font-heading font-bold text-2xl mb-1">{recipe.name}</h2>
-      {recipe.description && <p className="text-sm opacity-70 mb-3">{recipe.description}</p>}
-      <p className="text-xs opacity-60 mb-4">
-        כמות בסיס: {recipe.base_quantity} {recipe.base_unit}
-      </p>
+      {recipe.description && <p className="text-sm opacity-70 mb-4">{recipe.description}</p>}
 
       {ingredientRows.length > 0 && (
         <div className="mb-4">

@@ -295,9 +295,10 @@ export default function Recipes() {
                           ref={dragProvided.innerRef}
                           {...dragProvided.draggableProps}
                           layout
+                          onClick={() => !reordering && openRecipe(recipe)}
                           className={`rounded-xl group relative flex flex-col items-center text-center border border-border bg-card shadow-soft transition-all duration-200 p-2.5 ${
-                            snapshot.isDragging ? 'shadow-card-hover' : 'hover:shadow-card-hover hover:-translate-y-0.5'
-                          }`}
+                            reordering ? '' : 'cursor-pointer'
+                          } ${snapshot.isDragging ? 'shadow-card-hover' : 'hover:shadow-card-hover hover:-translate-y-0.5'}`}
                         >
                           {reordering ? (
                             <div {...dragProvided.dragHandleProps} className="absolute top-1 right-1 p-1 rounded-full bg-muted cursor-grab active:cursor-grabbing">
@@ -331,12 +332,7 @@ export default function Recipes() {
                             )
                           )}
 
-                          <h3
-                            className="font-heading font-semibold text-xs leading-tight cursor-pointer w-full py-2 line-clamp-3 min-h-[3em] flex items-center justify-center"
-                            onClick={() => !reordering && openRecipe(recipe)}
-                          >
-                            {recipe.name}
-                          </h3>
+                          <h3 className="font-heading font-semibold text-xs leading-tight w-full py-2 line-clamp-3 min-h-[3em] flex items-center justify-center">{recipe.name}</h3>
                         </motion.div>
                       ) : (
                         <div

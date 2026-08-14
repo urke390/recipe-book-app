@@ -40,9 +40,11 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
       <header className="mb-6 border-b-2 border-current pb-3">
         <h2 className="text-3xl font-bold">{recipe.name}</h2>
         {recipe.description && <p className="text-base opacity-70 mt-1">{recipe.description}</p>}
-        <p className="text-sm opacity-70 mt-1">
-          כמות לייצור: <strong>{volume ?? recipe.base_quantity}</strong> {recipe.base_unit} (יחס {totalScaleFactor.toFixed(2)}×{vatScales.length > 1 ? `, ${vatScales.length} אצוות` : ''})
-        </p>
+        {totalScaleFactor !== 1 && (
+          <p className="text-sm opacity-70 mt-1">
+            יחס הכנה: <strong>{totalScaleFactor.toFixed(2)}×</strong>
+          </p>
+        )}
       </header>
 
       {(ingredientRows.length > 0 || recipeParams.length > 0) && (

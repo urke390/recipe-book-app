@@ -49,8 +49,6 @@ export default function RecipeEditor() {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl] = useState('')
-  const [baseQuantity, setBaseQuantity] = useState(4)
-  const [baseUnit, setBaseUnit] = useState('מנות')
   const [categoryId, setCategoryId] = useState(null)
   const [addingStep, setAddingStep] = useState(false)
   const [editingStepId, setEditingStepId] = useState(null)
@@ -69,8 +67,6 @@ export default function RecipeEditor() {
       setName(recipe.name || '')
       setDescription(recipe.description || '')
       setImageUrl(recipe.image_url || '')
-      setBaseQuantity(recipe.base_quantity || 4)
-      setBaseUnit(recipe.base_unit || 'מנות')
       setCategoryId(recipe.category_id || null)
     }
   }, [recipe?.id])
@@ -91,7 +87,7 @@ export default function RecipeEditor() {
 
   const saveDetailsMutation = useMutation({
     mutationFn: async () => {
-      const data = { name, description: description || null, image_url: imageUrl || null, base_quantity: parseFloat(baseQuantity) || 4, base_unit: baseUnit, category_id: categoryId }
+      const data = { name, description: description || null, image_url: imageUrl || null, category_id: categoryId }
       if (isNew) return db.Recipe.create(data)
       return db.Recipe.update(id, data)
     },
@@ -246,16 +242,6 @@ export default function RecipeEditor() {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="mb-1 block">כמות בסיס</Label>
-              <Input type="number" value={baseQuantity} onChange={(e) => setBaseQuantity(e.target.value)} disabled={!editor} />
-            </div>
-            <div>
-              <Label className="mb-1 block">יחידת בסיס</Label>
-              <Input value={baseUnit} onChange={(e) => setBaseUnit(e.target.value)} disabled={!editor} />
-            </div>
           </div>
           {editor && (
             <Button onClick={() => saveDetailsMutation.mutate()} disabled={!name || saveDetailsMutation.isPending} className="w-full">
