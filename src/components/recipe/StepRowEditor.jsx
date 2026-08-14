@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { db } from '@/api/db'
 import { Input } from '@/components/ui/input'
@@ -19,68 +19,29 @@ function decomposeDuration(minutes) {
   return { value: String(minutes), unit: 'minutes' }
 }
 
+// Ingredients are free text (just a name) - no category/ingredient catalog
+// lookup. That catalog (categories/ingredients tables) is a leftover from
+// cheese-app's structured ingredient list; this app's recipes were imported
+// with free-text ingredient names from the start, and picking from a
+// pre-built list added friction with no benefit here.
 export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClose, dragHandleProps }) {
   const [type, setType] = useState(step?.type || 'action')
   const [title, setTitle] = useState(step?.title || '')
-  const [categoryId, setCategoryId] = useState('')
-  const [ingredientId, setIngredientId] = useState(step?.ingredient_id || '')
   const [ingredientName, setIngredientName] = useState(step?.ingredient_name || '')
-  const [categoryName, setCategoryName] = useState(step?.category_name || '')
   const [baseQuantity, setBaseQuantity] = useState(step?.base_quantity ?? '')
-  const [unit, setUnit] = useState(step?.unit || 'גרם')
+  const [unit, setUnit] = useState(step?.unit || '')
   const initDur = decomposeDuration(step?.duration_minutes)
   const [durationValue, setDurationValue] = useState(initDur.value)
   const [durationUnit, setDurationUnit] = useState(initDur.unit)
   const [isFinalStep, setIsFinalStep] = useState(step?.is_final_step || false)
   const [instructions, setInstructions] = useState(step?.instructions || '')
 
-  const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: () => db.Category.list('name') })
   const { data: units = [] } = useQuery({ queryKey: ['units'], queryFn: () => db.Unit.list('order') })
-  const { data: ingredients = [] } = useQuery({
-    queryKey: ['ingredients', categoryId],
-    queryFn: () => db.Ingredient.filter({ category_id: categoryId }),
-    enabled: !!categoryId,
-  })
-
-  // Resolve the initial category from the step's stored category_name (we only persist the name, not the id)
-  useEffect(() => {
-    if (step?.category_name && categories.length && !categoryId) {
-      const match = categories.find((c) => c.name === step.category_name)
-      if (match) setCategoryId(match.id)
-    }
-  }, [categories, step?.category_name])
-
-  const isSelfIngredient = categoryId && ingredients.length === 1 && ingredients[0].name === categoryName
-
-  useEffect(() => {
-    if (isSelfIngredient) {
-      setIngredientId(ingredients[0].id)
-      setIngredientName(ingredients[0].name)
-      setUnit(ingredients[0].default_unit || 'גרם')
-    }
-  }, [isSelfIngredient])
-
-  const handleCategoryChange = (catId) => {
-    const cat = categories.find((c) => c.id === catId)
-    setCategoryId(catId)
-    setCategoryName(cat?.name || '')
-    setIngredientId('')
-    setIngredientName('')
-  }
-
-  const handleIngredientChange = (ingId) => {
-    const ing = ingredients.find((i) => i.id === ingId)
-    if (ing) {
-      setIngredientId(ingId)
-      setIngredientName(ing.name)
-      setUnit(ing.default_unit || 'גרם')
-    }
-  }
 
   const durationMinutes = durationValue ? parseFloat(durationValue) * (TIME_UNITS.find((u) => u.value === durationUnit)?.multiplier || 1) : null
 
   const isValid = () => {
-    if (type === 'ingredient_addition') return ingredientId && baseQuantity !== ''
+    if (type === 'ingredient_addition') return !!ingredientName.trim() && baseQuantity !== ''
     if (type === 'wait_time') return durationValue && parseFloat(durationValue) > 0
     if (type === 'action') return !!title
     return false
@@ -92,11 +53,11 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
       type,
       title: title || null,
       instructions: instructions || null,
-      ingredient_id: type === 'ingredient_addition' ? ingredientId : null,
-      ingredient_name: type === 'ingredient_addition' ? ingredientName : null,
-      category_name: type === 'ingredient_addition' ? categoryName : null,
+      ingredient_id: null,
+      ingredient_name: type === 'ingredient_addition' ? ingredientName.trim() : null,
+      category_name: null,
       base_quantity: type === 'ingredient_addition' ? parseFloat(baseQuantity) : null,
-      unit: type === 'ingredient_addition' ? unit : null,
+      unit: type === 'ingredient_addition' ? unit || null : null,
       duration_minutes: type === 'wait_time' ? durationMinutes : null,
       is_final_step: type === 'action' ? isFinalStep : false,
     })
@@ -126,38 +87,14 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
 
         {type === 'ingredient_addition' && (
           <>
-            <Select value={categoryId} onValueChange={handleCategoryChange}>
-              <SelectTrigger className="h-7 text-sm w-28 border-dashed">
-                <SelectValue placeholder="כותרת..." />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {!isSelfIngredient && (
-              <Select value={ingredientId} onValueChange={handleIngredientChange} disabled={!categoryId}>
-                <SelectTrigger className="h-7 text-sm w-24 border-dashed">
-                  <SelectValue placeholder="רכיב..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {ingredients.map((i) => (
-                    <SelectItem key={i.id} value={i.id}>
-                      {i.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            <Input value={ingredientName} onChange={(e) => setIngredientName(e.target.value)} className="h-7 text-sm flex-1 min-w-24 border-dashed" placeholder="שם הרכיב..." />
             <Input type="number" value={baseQuantity} onChange={(e) => setBaseQuantity(e.target.value)} className="h-7 text-sm w-16 border-dashed" placeholder="כמות" />
-            <Select value={unit} onValueChange={setUnit}>
-              <SelectTrigger className="h-7 text-sm w-16 border-dashed">
-                <SelectValue />
+            <Select value={unit || 'none'} onValueChange={(v) => setUnit(v === 'none' ? '' : v)}>
+              <SelectTrigger className="h-7 text-sm w-20 border-dashed">
+                <SelectValue placeholder="יחידה" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">ללא</SelectItem>
                 {units.map((u) => (
                   <SelectItem key={u.id} value={u.name}>
                     {u.name}

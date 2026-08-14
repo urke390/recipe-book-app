@@ -31,7 +31,7 @@ function StepperInput({ value, onChange, placeholder }) {
           if (draft !== (value ?? '')) onChange(draft)
         }}
         placeholder={placeholder}
-        className="flex-1 text-center text-sm font-semibold bg-transparent focus:outline-none min-w-0 w-0"
+        className="flex-1 text-center text-sm font-semibold bg-transparent focus:outline-none min-w-[2.5rem]"
         dir="ltr"
       />
       <button type="button" onClick={() => adjust(0.5)} className="px-3 h-full text-muted-foreground hover:bg-secondary transition-colors flex-shrink-0">
