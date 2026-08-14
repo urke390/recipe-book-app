@@ -1,0 +1,12 @@
+-- 0009_production_sessions_replica_identity.sql -- fixes deleted sessions
+-- lingering in the "ייצור מודרך" list until a manual refresh.
+--
+-- Root cause: Supabase Realtime evaluates postgres_changes column filters
+-- (here, status=eq.active) against the row image in the WAL. With the
+-- default REPLICA IDENTITY (primary key only), a DELETE's old row only
+-- carries the id - no status column to filter on - so the server silently
+-- drops the event for any subscription filtered by status, and
+-- useRealtimeList (src/hooks/useRealtime.js) never receives it. FULL
+-- replica identity puts every column in the old row image, letting the
+-- filter evaluate and the DELETE reach the client.
+alter table production_sessions replica identity full;
