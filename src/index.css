@@ -82,9 +82,36 @@
    pages for the interactive "ספר מתכונים" and the single-recipe print
    preview's opening animation. */
 .book-page {
-  background: #fdf9ef;
+  background-color: #fdf9ef;
   color: hsl(20 35% 14%);
   overflow: hidden;
+  position: relative;
+}
+/* Spine shadow: the page curves down into the binding, so it darkens
+   toward whichever edge touches the book's center crease. */
+.book-page.page-right {
+  background-image: linear-gradient(to right, rgba(20, 15, 10, 0.28), transparent 9%);
+}
+.book-page.page-left {
+  background-image: linear-gradient(to left, rgba(20, 15, 10, 0.28), transparent 9%);
+}
+/* Fore-edge paper stack: a thin banded strip suggesting the many pages
+   already turned, sitting just outside the open spread on both sides. */
+.book-stack-edge {
+  position: absolute;
+  top: 3%;
+  bottom: 3%;
+  width: 10px;
+  background: repeating-linear-gradient(to bottom, rgba(120, 100, 70, 0.45) 0 2px, rgba(255, 250, 235, 0.75) 2px 4px), #efe6d2;
+  box-shadow: 0 2px 6px hsl(20 35% 14% / 0.35);
+}
+.book-stack-edge.right {
+  right: -8px;
+  border-radius: 0 4px 4px 0;
+}
+.book-stack-edge.left {
+  left: -8px;
+  border-radius: 4px 0 0 4px;
 }
 .book-page-inner {
   height: 100%;

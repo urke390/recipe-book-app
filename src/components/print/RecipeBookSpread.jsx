@@ -16,8 +16,11 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
 
   return (
     <div className="flex justify-center py-6 px-2">
-      <div className="book-open-animation flex w-full max-w-3xl shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm overflow-hidden" style={{ minHeight: 500 }}>
-        <div className="book-page flex-1 border-l border-black/10">
+      <div className="relative w-full max-w-3xl">
+        <div className="book-stack-edge right" />
+        <div className="book-stack-edge left" />
+        <div className="book-open-animation flex w-full shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm overflow-hidden" style={{ minHeight: 500 }}>
+        <div className="book-page page-right flex-1 border-l border-black/10">
           <div className="book-page-inner">
             <h2 className="font-heading font-bold text-2xl mb-1">{recipe.name}</h2>
             {recipe.description && <p className="text-sm opacity-70 mb-3">{recipe.description}</p>}
@@ -66,7 +69,7 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
           </div>
         </div>
 
-        <div className="book-page flex-1">
+        <div className="book-page page-left flex-1">
           <div className="book-page-inner">
             <h3 className="font-heading font-semibold text-base mb-3">שלבי הכנה</h3>
             <ol className="text-sm space-y-2 list-decimal pr-5">
@@ -80,6 +83,7 @@ export default function RecipeBookSpread({ recipe, steps, parameters }) {
               ))}
             </ol>
           </div>
+        </div>
         </div>
       </div>
     </div>

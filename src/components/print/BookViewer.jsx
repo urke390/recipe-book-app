@@ -82,10 +82,10 @@ function Spread({ recipe, steps, parameters }) {
   }))
   return (
     <div className="flex w-full h-full">
-      <div className="book-page flex-1 border-l border-black/10">
+      <div className="book-page page-right flex-1 border-l border-black/10">
         <IngredientsPage recipe={recipe} ingredientRows={ingredientRows} recipeParams={recipe.parameter_values || []} parameters={parameters} />
       </div>
-      <div className="book-page flex-1">
+      <div className="book-page page-left flex-1">
         <StepsPage steps={steps} />
       </div>
     </div>
@@ -127,19 +127,25 @@ export default function BookViewer({ recipes, stepsByRecipe, parameters }) {
     <div className="flex flex-col items-center gap-3 py-4">
       <div className="relative w-full max-w-3xl" style={{ height: 560, perspective: 2000 }}>
         {!opened ? (
-          <button onClick={() => setOpened(true)} className="book-page w-full h-full block">
-            <div className="book-page-inner book-cover">
-              <BookOpen className="w-12 h-12 mb-4 opacity-80" />
-              <h1 className="font-heading font-bold text-3xl text-center">ספר מתכונים ביתי</h1>
-              <p className="text-sm opacity-80 mt-3">לחץ לפתיחה</p>
-            </div>
-          </button>
+          <>
+            <div className="book-stack-edge right" />
+            <div className="book-stack-edge left" />
+            <button onClick={() => setOpened(true)} className="book-page w-full h-full block relative shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm">
+              <div className="book-page-inner book-cover">
+                <BookOpen className="w-12 h-12 mb-4 opacity-80" />
+                <h1 className="font-heading font-bold text-3xl text-center">ספר מתכונים ביתי</h1>
+                <p className="text-sm opacity-80 mt-3">לחץ לפתיחה</p>
+              </div>
+            </button>
+          </>
         ) : total === 0 ? (
           <div className="book-page w-full h-full">
             <div className="book-page-inner book-cover">אין מתכונים עדיין</div>
           </div>
         ) : (
           <>
+            <div className="book-stack-edge right" />
+            <div className="book-stack-edge left" />
             <div className="absolute inset-0 shadow-[0_12px_32px_hsl(20_35%_14%/0.25)] rounded-sm overflow-hidden">
               {current && <Spread recipe={current} steps={stepsByRecipe[current.id] || []} parameters={parameters} />}
             </div>
