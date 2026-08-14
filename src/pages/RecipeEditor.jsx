@@ -23,7 +23,7 @@ import {
 import StepRowEditor from '@/components/recipe/StepRowEditor'
 import ParamValueEditor from '@/components/recipe/ParamValueEditor'
 import PrintRecipe from '@/pages/print/PrintRecipe'
-import { getStepDisplayTitle, STEP_TYPE_COLORS } from '@/lib/stepUtils'
+import { getStepDisplayTitle, STEP_TYPE_COLORS, STEP_TYPE_LABELS } from '@/lib/stepUtils'
 import Qty from '@/components/Qty'
 
 const TABS = [
@@ -276,9 +276,7 @@ export default function RecipeEditor() {
                                 <GripVertical className="w-4 h-4" />
                               </div>
                               <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 bg-secondary text-secondary-foreground">{idx + 1}</span>
-                              <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${STEP_TYPE_COLORS[step.type]}`}>
-                                {step.type === 'ingredient_addition' ? 'רכיב' : step.type === 'wait_time' ? 'המתנה' : 'פעולה'}
-                              </span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${STEP_TYPE_COLORS[step.type]}`}>{STEP_TYPE_LABELS[step.type]}</span>
                               <span className="flex-1 min-w-0 truncate text-sm font-medium">{getStepDisplayTitle(step)}</span>
                               {step.type === 'ingredient_addition' && step.base_quantity && (
                                 <span className="text-xs text-muted-foreground flex-shrink-0">

@@ -44,6 +44,7 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
     if (type === 'ingredient_addition') return !!ingredientName.trim() && baseQuantity !== ''
     if (type === 'wait_time') return durationValue && parseFloat(durationValue) > 0
     if (type === 'action') return !!title
+    if (type === 'section_header') return !!title
     return false
   }
 
@@ -82,6 +83,7 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
             <SelectItem value="ingredient_addition">הוספת רכיב</SelectItem>
             <SelectItem value="wait_time">זמן המתנה</SelectItem>
             <SelectItem value="action">פעולה</SelectItem>
+            <SelectItem value="section_header">כותרת משנה</SelectItem>
           </SelectContent>
         </Select>
 
@@ -134,7 +136,11 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
           </>
         )}
 
-        <Input value={instructions} onChange={(e) => setInstructions(e.target.value)} className="h-7 text-sm w-full border-dashed mt-1" placeholder="הוראות נוספות (אופציונלי)..." />
+        {type === 'section_header' && <Input value={title} onChange={(e) => setTitle(e.target.value)} className="h-7 text-sm flex-1 min-w-24 border-dashed" placeholder="לדוגמה: לציפוי..." />}
+
+        {type !== 'section_header' && (
+          <Input value={instructions} onChange={(e) => setInstructions(e.target.value)} className="h-7 text-sm w-full border-dashed mt-1" placeholder="הוראות נוספות (אופציונלי)..." />
+        )}
       </div>
 
       <div className="flex gap-0.5 flex-shrink-0">

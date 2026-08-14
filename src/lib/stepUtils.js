@@ -3,6 +3,7 @@ export const STEP_TYPE_LABELS = {
   wait_time: 'זמן המתנה',
   action: 'פעולה',
   parameter_display: 'פרמטר',
+  section_header: 'כותרת משנה',
 }
 
 export const STEP_TYPE_COLORS = {
@@ -10,6 +11,7 @@ export const STEP_TYPE_COLORS = {
   wait_time: 'bg-amber-100 text-amber-800 border-amber-200',
   action: 'bg-emerald-100 text-emerald-800 border-emerald-200',
   parameter_display: 'bg-violet-100 text-violet-800 border-violet-200',
+  section_header: 'bg-slate-100 text-slate-800 border-slate-200',
 }
 
 export function formatDurationDisplay(minutes) {
@@ -33,6 +35,8 @@ export function getStepDisplayTitle(step) {
       return 'פעולה'
     case 'parameter_display':
       return step.parameter_name || 'פרמטר'
+    case 'section_header':
+      return 'כותרת'
     default:
       return 'שלב'
   }
