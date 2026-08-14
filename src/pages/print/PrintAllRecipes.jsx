@@ -6,6 +6,7 @@ import { db } from '@/api/db'
 import { Button } from '@/components/ui/button'
 import RecipePrintSection from '@/components/print/RecipePrintSection'
 import PrintModal from '@/components/print/PrintModal'
+import BookViewer from '@/components/print/BookViewer'
 import FeedbackWidget from '@/components/FeedbackWidget'
 import { exportHtmlToWord } from '@/lib/exportWord'
 
@@ -45,12 +46,22 @@ export default function PrintAllRecipes({ onClose }) {
     </>
   )
 
+  const stepsByRecipe = Object.fromEntries(recipes.map((r) => [r.id, allSteps.filter((s) => s.recipe_id === r.id)]))
+
   const content = (
-    <div id="print-root" ref={printRootRef} className="max-w-2xl mx-auto p-8 text-foreground bg-background">
-      {recipes.map((recipe, i) => (
-        <RecipePrintSection key={recipe.id} recipe={recipe} steps={allSteps.filter((s) => s.recipe_id === recipe.id)} parameters={parameters} pageBreakBefore={i > 0} />
-      ))}
-    </div>
+    <>
+      <div className="print:hidden">
+        <BookViewer recipes={recipes} stepsByRecipe={stepsByRecipe} parameters={parameters} />
+      </div>
+      {/* Flat, paginated markup used only for window.print()/Word export - see
+          index.css's sr-only/print rules for how this stays invisible on
+          screen but becomes the entire visible page when printing. */}
+      <div id="print-root" ref={printRootRef} className="sr-only print:not-sr-only max-w-2xl mx-auto p-8 text-foreground bg-background">
+        {recipes.map((recipe, i) => (
+          <RecipePrintSection key={recipe.id} recipe={recipe} steps={stepsByRecipe[recipe.id]} parameters={parameters} pageBreakBefore={i > 0} />
+        ))}
+      </div>
+    </>
   )
 
   if (isModal) {

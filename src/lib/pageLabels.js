@@ -9,6 +9,7 @@ const PATTERNS = [
   [/^\/production/, 'ייצור מודרך'],
   [/^\/categories/, 'כותרות ורכיבים'],
   [/^\/parameters/, 'פרמטרים'],
+  [/^\/units/, 'יחידות מידה'],
   [/^\/alert-sound/, 'התראות'],
   [/^\/settings\/edit-code/, 'קוד עריכה'],
   [/^\/settings\/feedback/, 'הערות ומשוב'],

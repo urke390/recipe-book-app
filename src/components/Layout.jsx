@@ -1,5 +1,5 @@
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { BookOpen, ChefHat, Tag, Sliders, Settings, Bell, KeyRound, MessageSquareText, Menu } from 'lucide-react'
+import { BookOpen, ChefHat, Tag, Sliders, Ruler, Settings, Bell, KeyRound, MessageSquareText, Menu } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { db } from '@/api/db'
@@ -17,6 +17,7 @@ const navItems = [
 const settingsItems = [
   { path: '/categories', label: 'כותרות ורכיבים', icon: Tag },
   { path: '/parameters', label: 'פרמטרים', icon: Sliders },
+  { path: '/units', label: 'יחידות מידה', icon: Ruler },
   { path: '/alert-sound', label: 'צליל התראה', icon: Bell },
 ]
 

@@ -12,6 +12,7 @@ import GuidedProductionList from '@/pages/GuidedProductionList'
 import ProductionRunner from '@/pages/ProductionRunner'
 import Categories from '@/pages/Categories'
 import Parameters from '@/pages/Parameters'
+import Units from '@/pages/Units'
 import AlertSound from '@/pages/AlertSound'
 import EditCodeSettings from '@/pages/EditCodeSettings'
 import FeedbackSettings from '@/pages/FeedbackSettings'
@@ -52,6 +53,7 @@ function App() {
             <Route path="/production/:sessionId" element={<ProductionRunner />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/parameters" element={<Parameters />} />
+            <Route path="/units" element={<Units />} />
             <Route path="/alert-sound" element={<AlertSound />} />
             <Route path="/settings/edit-code" element={<EditCodeSettings />} />
             <Route path="/settings/feedback" element={<FeedbackSettings />} />

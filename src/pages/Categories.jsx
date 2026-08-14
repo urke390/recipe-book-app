@@ -19,9 +19,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useToast } from '@/components/ui/use-toast'
-import { UNITS } from '@/lib/stepUtils'
 
-function CategoryDialog({ category, onSave, onClose }) {
+function CategoryDialog({ category, onSave, onClose, units }) {
   const [name, setName] = useState(category?.name || '')
   const [description, setDescription] = useState(category?.description || '')
   const [isSelfIngredient, setIsSelfIngredient] = useState(false)
@@ -55,9 +54,9 @@ function CategoryDialog({ category, onSave, onClose }) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {UNITS.map((u) => (
-                        <SelectItem key={u} value={u}>
-                          {u}
+                      {units.map((u) => (
+                        <SelectItem key={u.id} value={u.name}>
+                          {u.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -80,7 +79,7 @@ function CategoryDialog({ category, onSave, onClose }) {
   )
 }
 
-function IngredientDialog({ ingredient, categoryId, onSave, onClose }) {
+function IngredientDialog({ ingredient, categoryId, onSave, onClose, units }) {
   const [name, setName] = useState(ingredient?.name || '')
   const [description, setDescription] = useState(ingredient?.description || '')
   const [defaultUnit, setDefaultUnit] = useState(ingredient?.default_unit || 'גרם')
@@ -106,9 +105,9 @@ function IngredientDialog({ ingredient, categoryId, onSave, onClose }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {UNITS.map((u) => (
-                  <SelectItem key={u} value={u}>
-                    {u}
+                {units.map((u) => (
+                  <SelectItem key={u.id} value={u.name}>
+                    {u.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -138,6 +137,7 @@ export default function Categories() {
   const [deleteType, setDeleteType] = useState(null)
 
   const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: () => db.Category.list('name') })
+  const { data: units = [] } = useQuery({ queryKey: ['units'], queryFn: () => db.Unit.list('order') })
   const { data: ingredients = [] } = useQuery({
     queryKey: ['ingredients', selectedCategoryId],
     queryFn: () => db.Ingredient.filter({ category_id: selectedCategoryId }, 'name'),
@@ -314,9 +314,15 @@ export default function Categories() {
         </div>
       </div>
 
-      {catDialog && <CategoryDialog category={catDialog !== 'new' ? catDialog : null} onSave={(data) => saveCatMutation.mutate(data)} onClose={() => setCatDialog(null)} />}
+      {catDialog && <CategoryDialog category={catDialog !== 'new' ? catDialog : null} units={units} onSave={(data) => saveCatMutation.mutate(data)} onClose={() => setCatDialog(null)} />}
       {ingDialog && (
-        <IngredientDialog ingredient={ingDialog !== 'new' ? ingDialog : null} categoryId={selectedCategoryId} onSave={(data) => saveIngMutation.mutate(data)} onClose={() => setIngDialog(null)} />
+        <IngredientDialog
+          ingredient={ingDialog !== 'new' ? ingDialog : null}
+          categoryId={selectedCategoryId}
+          units={units}
+          onSave={(data) => saveIngMutation.mutate(data)}
+          onClose={() => setIngDialog(null)}
+        />
       )}
 
       <AlertDialog open={!!deleteType} onOpenChange={() => setDeleteType(null)}>

@@ -4,7 +4,7 @@ import { db } from '@/api/db'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Check, X, GripVertical } from 'lucide-react'
-import { STEP_TYPE_COLORS, UNITS } from '@/lib/stepUtils'
+import { STEP_TYPE_COLORS } from '@/lib/stepUtils'
 
 const TIME_UNITS = [
   { value: 'minutes', label: 'דקות', multiplier: 1 },
@@ -35,6 +35,7 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
   const [instructions, setInstructions] = useState(step?.instructions || '')
 
   const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: () => db.Category.list('name') })
+  const { data: units = [] } = useQuery({ queryKey: ['units'], queryFn: () => db.Unit.list('order') })
   const { data: ingredients = [] } = useQuery({
     queryKey: ['ingredients', categoryId],
     queryFn: () => db.Ingredient.filter({ category_id: categoryId }),
@@ -157,9 +158,9 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {UNITS.map((u) => (
-                  <SelectItem key={u} value={u}>
-                    {u}
+                {units.map((u) => (
+                  <SelectItem key={u.id} value={u.name}>
+                    {u.name}
                   </SelectItem>
                 ))}
               </SelectContent>

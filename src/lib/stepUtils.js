@@ -46,4 +46,3 @@ export function formatDuration(seconds) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-export const UNITS = ['גרם', 'ק"ג', 'מ"ל', 'ליטר', 'יחידה', 'כפית', 'כף', 'כוס']

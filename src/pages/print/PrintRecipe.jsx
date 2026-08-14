@@ -5,6 +5,7 @@ import { db } from '@/api/db'
 import { Button } from '@/components/ui/button'
 import RecipePrintSection from '@/components/print/RecipePrintSection'
 import PrintModal from '@/components/print/PrintModal'
+import RecipeBookSpread from '@/components/print/RecipeBookSpread'
 import FeedbackWidget from '@/components/FeedbackWidget'
 
 // recipeId/volume props let this be opened as an in-app modal (see onClose);
@@ -34,9 +35,14 @@ export default function PrintRecipe({ recipeId: recipeIdProp, volume: volumeProp
   const scaleFactor = volume ? volume / recipe.base_quantity : 1
 
   const content = (
-    <div id="print-root" className="max-w-2xl mx-auto p-8 text-foreground bg-background">
-      <RecipePrintSection recipe={recipe} steps={steps} parameters={parameters} vatScales={[scaleFactor]} volume={volume} />
-    </div>
+    <>
+      <div className="print:hidden">
+        <RecipeBookSpread recipe={recipe} steps={steps} parameters={parameters} />
+      </div>
+      <div id="print-root" className="sr-only print:not-sr-only max-w-2xl mx-auto p-8 text-foreground bg-background">
+        <RecipePrintSection recipe={recipe} steps={steps} parameters={parameters} vatScales={[scaleFactor]} volume={volume} />
+      </div>
+    </>
   )
 
   if (isModal) {
