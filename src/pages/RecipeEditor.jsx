@@ -165,7 +165,7 @@ export default function RecipeEditor() {
     })
   }
 
-  const handleBack = () => navigate(isNew ? '/recipes' : `/recipes/${id}`)
+  const handleBack = () => navigate(-1)
 
   if (id && recipeLoading) {
     return (
