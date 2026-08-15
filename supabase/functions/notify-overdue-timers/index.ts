@@ -35,12 +35,12 @@ Deno.serve(async () => {
 
   webpush.setVapidDetails(Deno.env.get('VAPID_SUBJECT')!, Deno.env.get('VAPID_PUBLIC_KEY')!, Deno.env.get('VAPID_PRIVATE_KEY')!)
 
-  const { data: subs } = await supabase.from('push_subscriptions').select('endpoint, p256dh, auth, owner_id')
+  const { data: subs } = await supabase.from('push_subscriptions').select('endpoint, p256dh, auth, owner_id, notify_lead_seconds')
 
   // Guided production is per-device now - each session only pushes to the
   // subscription(s) registered by the same device that started it, never to
   // every registered device.
-  const subsByOwner = new Map<string, { endpoint: string; p256dh: string; auth: string }[]>()
+  const subsByOwner = new Map<string, { endpoint: string; p256dh: string; auth: string; notify_lead_seconds: number }[]>()
   for (const sub of subs || []) {
     if (!sub.owner_id) continue
     const list = subsByOwner.get(sub.owner_id) || []
@@ -59,16 +59,24 @@ Deno.serve(async () => {
   if (waitError) return new Response(JSON.stringify({ error: waitError.message }), { status: 500 })
 
   const now = Date.now()
+  // A device can ask to be notified up to notify_lead_seconds before the
+  // timer actually ends - if an owner has several devices with different
+  // preferences, the earliest one wins and all of that owner's devices get
+  // notified together at that moment.
   const dueWait = (waitSessions || []).filter((s) => {
     if (s.notified_at) return false // already sent once for this step
+    const ownerSubs = subsByOwner.get(s.owner_id) || []
+    const leadSeconds = ownerSubs.length ? Math.min(...ownerSubs.map((sub) => sub.notify_lead_seconds ?? 0)) : 0
     const endsAt = new Date(s.step_started_at).getTime() + s.step_duration_seconds * 1000
-    return endsAt <= now // just became overdue
+    return endsAt - leadSeconds * 1000 <= now
   })
 
   let waitSent = 0
   for (const session of dueWait) {
     const ownerSubs = subsByOwner.get(session.owner_id) || []
-    waitSent += await sendPushToOwner(supabase, ownerSubs, { title: session.recipe_name || 'ספר מתכונים ביתי', body: 'הזמן הסתיים - חזרו לייצור', url: `/production/${session.id}` })
+    const endsAt = new Date(session.step_started_at).getTime() + session.step_duration_seconds * 1000
+    const body = endsAt > now ? 'הזמן עומד להסתיים' : 'הזמן הסתיים - חזרו לייצור'
+    waitSent += await sendPushToOwner(supabase, ownerSubs, { title: session.recipe_name || 'ספר מתכונים ביתי', body, url: `/production/${session.id}` })
     await supabase.from('production_sessions').update({ notified_at: new Date().toISOString() }).eq('id', session.id)
   }
 
