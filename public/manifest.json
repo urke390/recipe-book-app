@@ -10,9 +10,9 @@
   "lang": "he",
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icon.png",
+      "sizes": "222x228",
+      "type": "image/png",
       "purpose": "any"
     }
   ]
