@@ -15,7 +15,9 @@ export default function Qty({ value, unit, className = '' }) {
   if (!split) {
     return (
       <span className={className}>
-        {parseFloat(value.toFixed(2))}
+        <span dir="ltr" className="inline-block">
+          {parseFloat(value.toFixed(2))}
+        </span>
         {unit ? ` ${unit}` : ''}
       </span>
     )
@@ -23,17 +25,23 @@ export default function Qty({ value, unit, className = '' }) {
 
   return (
     <span className={className}>
-      {split.num === 0 ? (
-        split.whole
-      ) : (
-        <>
-          {split.whole > 0 && <span>{split.whole}</span>}
-          <span className="inline-flex flex-col items-center leading-none text-[0.65em] mx-0.5 align-middle relative -top-[0.1em]">
-            <span>{split.num}</span>
-            <span className="border-t border-current px-0.5">{split.den}</span>
-          </span>
-        </>
-      )}
+      {/* Isolated from the surrounding RTL text so the whole number and the
+          stacked fraction render left-to-right in their natural order
+          ("1½") instead of the digits getting reordered by the bidi
+          algorithm - the unit word stays outside, in normal RTL flow. */}
+      <span dir="ltr" className="inline-flex items-center">
+        {split.num === 0 ? (
+          split.whole
+        ) : (
+          <>
+            {split.whole > 0 && <span>{split.whole}</span>}
+            <span className="inline-flex flex-col items-center leading-none text-[0.65em] mx-0.5 align-middle relative -top-[0.1em]">
+              <span>{split.num}</span>
+              <span className="border-t border-current px-0.5">{split.den}</span>
+            </span>
+          </>
+        )}
+      </span>
       {unit ? ` ${unit}` : ''}
     </span>
   )

@@ -106,8 +106,10 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
               style={s.type === 'section_header' || s.type === 'ingredient_addition' ? { counterIncrement: 'list-item 0' } : undefined}
             >
               {s.type === 'ingredient_addition' && '• '}
+              {s.type === 'ingredient_addition' && s.base_quantity
+                ? `${parseFloat((s.base_quantity * stepListScaleFactor).toFixed(2))}${s.unit ? ` ${s.unit}` : ''} `
+                : ''}
               {getStepDisplayTitle(s)}
-              {s.type === 'ingredient_addition' && s.base_quantity ? ` — ${parseFloat((s.base_quantity * stepListScaleFactor).toFixed(2))}${s.unit ? ` ${s.unit}` : ''}` : ''}
               {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
               {s.instructions && <span className="opacity-70"> ({s.instructions})</span>}
             </li>

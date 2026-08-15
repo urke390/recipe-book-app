@@ -78,13 +78,12 @@ function StepsPage({ steps }) {
             style={s.type === 'section_header' || s.type === 'ingredient_addition' ? { counterIncrement: 'list-item 0' } : undefined}
           >
             {s.type === 'ingredient_addition' && '• '}
-            {getStepDisplayTitle(s)}
             {s.type === 'ingredient_addition' && s.base_quantity && (
               <>
-                {' — '}
-                <Qty value={s.base_quantity} unit={s.unit} />
+                <Qty value={s.base_quantity} unit={s.unit} />{' '}
               </>
             )}
+            {getStepDisplayTitle(s)}
             {s.type === 'wait_time' && s.duration_minutes ? ` — ${formatDurationDisplay(s.duration_minutes)}` : ''}
             {s.instructions && <span className="opacity-70"> ({s.instructions})</span>}
           </li>

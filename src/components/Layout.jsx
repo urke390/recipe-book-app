@@ -129,7 +129,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto flex flex-col pb-20 md:pb-0">
+        <main className="flex-1 overflow-y-auto flex flex-col pb-28 md:pb-0">
           <Outlet />
         </main>
 

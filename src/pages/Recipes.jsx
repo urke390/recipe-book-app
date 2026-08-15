@@ -255,25 +255,31 @@ export default function Recipes() {
                         <div
                           ref={dragProvided.innerRef}
                           {...dragProvided.draggableProps}
-                          className={`flex items-center gap-3 bg-card border border-border rounded-xl p-2.5 shadow-soft ${snapshot.isDragging ? 'shadow-card-hover' : ''}`}
+                          onClick={() => !reordering && openRecipe(recipe)}
+                          className={`flex items-center gap-3 bg-card border border-border rounded-xl p-2.5 shadow-soft ${reordering ? '' : 'cursor-pointer'} ${
+                            snapshot.isDragging ? 'shadow-card-hover' : ''
+                          }`}
                         >
                           {reordering && (
                             <div {...dragProvided.dragHandleProps} className="cursor-grab active:cursor-grabbing text-muted-foreground flex-shrink-0">
                               <GripVertical className="w-4 h-4" />
                             </div>
                           )}
-                          <div className="flex-1 min-w-0 cursor-pointer" onClick={() => !reordering && openRecipe(recipe)}>
+                          <div className="flex-1 min-w-0">
                             <p className="font-semibold text-sm truncate">{recipe.name}</p>
                             {recipe.description && <p className="text-xs text-muted-foreground truncate">{recipe.description}</p>}
                           </div>
                           {!reordering && editor && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center flex-shrink-0">
+                                <button
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center flex-shrink-0"
+                                >
                                   <MoreVertical className="w-4 h-4 text-foreground" />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start" className="w-40">
+                              <DropdownMenuContent align="start" className="w-40" onClick={(e) => e.stopPropagation()}>
                                 <DropdownMenuItem onClick={() => navigate(`/recipes/${recipe.id}/edit`)} className="gap-2">
                                   <Pencil className="w-4 h-4" />
                                   <span>עריכה</span>

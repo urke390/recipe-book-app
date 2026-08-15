@@ -32,6 +32,15 @@ export default function RecipeView() {
 
   const { data: parameters = [] } = useQuery({ queryKey: ['parameters'], queryFn: () => db.Parameter.list() })
 
+  // Goes back to wherever the user actually came from (scroll position,
+  // active filter, etc. all preserved by the browser) instead of always
+  // resetting to the default recipes view - only falls back to that
+  // default when there's nowhere to go back to (e.g. a direct link).
+  const goBack = () => {
+    if (window.history.state?.idx > 0) navigate(-1)
+    else navigate('/recipes')
+  }
+
   if (recipeLoading) {
     return (
       <div className="flex items-center justify-center h-full py-24">
@@ -54,7 +63,7 @@ export default function RecipeView() {
   return (
     <div className="p-4 md:p-8 max-w-3xl mx-auto w-full">
       <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-3 bg-background/95 backdrop-blur-sm flex items-center gap-3 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/recipes')}>
+        <Button variant="ghost" size="icon" onClick={goBack}>
           <ChevronRight className="w-5 h-5" />
         </Button>
         <div className="flex-1">
