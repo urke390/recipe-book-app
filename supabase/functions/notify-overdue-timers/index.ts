@@ -14,7 +14,7 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import webpush from 'npm:web-push@3'
 
-async function sendPushToAll(supabase: ReturnType<typeof createClient>, subs: { endpoint: string; p256dh: string; auth: string }[], payload: Record<string, string>) {
+async function sendPushToOwner(supabase: ReturnType<typeof createClient>, subs: { endpoint: string; p256dh: string; auth: string }[], payload: Record<string, string>) {
   let sent = 0
   for (const sub of subs) {
     try {
@@ -35,12 +35,23 @@ Deno.serve(async () => {
 
   webpush.setVapidDetails(Deno.env.get('VAPID_SUBJECT')!, Deno.env.get('VAPID_PUBLIC_KEY')!, Deno.env.get('VAPID_PRIVATE_KEY')!)
 
-  const { data: subs } = await supabase.from('push_subscriptions').select('endpoint, p256dh, auth')
+  const { data: subs } = await supabase.from('push_subscriptions').select('endpoint, p256dh, auth, owner_id')
+
+  // Guided production is per-device now - each session only pushes to the
+  // subscription(s) registered by the same device that started it, never to
+  // every registered device.
+  const subsByOwner = new Map<string, { endpoint: string; p256dh: string; auth: string }[]>()
+  for (const sub of subs || []) {
+    if (!sub.owner_id) continue
+    const list = subsByOwner.get(sub.owner_id) || []
+    list.push(sub)
+    subsByOwner.set(sub.owner_id, list)
+  }
 
   // Overdue wait_time steps ---------------------------------------------------
   const { data: waitSessions, error: waitError } = await supabase
     .from('production_sessions')
-    .select('id, recipe_name, step_started_at, step_duration_seconds, notified_at')
+    .select('id, recipe_name, owner_id, step_started_at, step_duration_seconds, notified_at')
     .eq('status', 'active')
     .not('step_started_at', 'is', null)
     .not('step_duration_seconds', 'is', null)
@@ -56,7 +67,8 @@ Deno.serve(async () => {
 
   let waitSent = 0
   for (const session of dueWait) {
-    waitSent += await sendPushToAll(supabase, subs || [], { title: session.recipe_name || 'ספר מתכונים ביתי', body: 'הזמן הסתיים - חזרו לייצור', url: `/production/${session.id}` })
+    const ownerSubs = subsByOwner.get(session.owner_id) || []
+    waitSent += await sendPushToOwner(supabase, ownerSubs, { title: session.recipe_name || 'ספר מתכונים ביתי', body: 'הזמן הסתיים - חזרו לייצור', url: `/production/${session.id}` })
     await supabase.from('production_sessions').update({ notified_at: new Date().toISOString() }).eq('id', session.id)
   }
 
