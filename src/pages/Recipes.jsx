@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams, useNavigationType } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { Plus, Trash2, Copy, Search, BookOpen, MoreVertical, Pencil, Lock, Printer, LayoutGrid, List, GripVertical, Check, ArrowDownAZ, ArrowUpAZ, ArrowUpDown } from 'lucide-react'
@@ -15,6 +15,7 @@ import PrintAllRecipes from '@/pages/print/PrintAllRecipes'
 
 export default function Recipes() {
   const navigate = useNavigate()
+  const navigationType = useNavigationType()
   const { toast } = useToast()
   const { editor } = useEditor()
   const queryClient = useQueryClient()
@@ -25,12 +26,43 @@ export default function Recipes() {
   const [reordering, setReordering] = useState(false)
   const [localOrder, setLocalOrder] = useState(null) // optimistic order while a drag's persist mutation is in flight
   const [sortDir, setSortDir] = useState(null) // null (custom order) | 'asc' | 'desc' (alphabetical)
-  const [activeCategoryId, setActiveCategoryId] = useState(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeCategoryId = searchParams.get('category')
+  const setActiveCategoryId = (id) => setSearchParams(id ? { category: id } : {}, { replace: true })
+  const scrollRestored = useRef(false)
 
   useEffect(() => localStorage.setItem('recipes_view_mode', viewMode), [viewMode])
 
   const { data: recipes = [], isLoading } = useQuery({ queryKey: ['recipes'], queryFn: () => db.Recipe.list('order') })
   const { data: categories = [] } = useQuery({ queryKey: ['recipe_categories'], queryFn: () => db.RecipeCategory.list('name') })
+
+  // Persists scroll position across navigation so returning to this page
+  // (via the back button) lands exactly where the user left off instead of
+  // resetting to the top - only on POP (back/forward), a fresh visit (e.g.
+  // clicking the nav link) should still start at the top. The filter
+  // (activeCategoryId) lives in the URL, so the browser's own history
+  // already restores it - only scroll position needs manual handling since
+  // the actual scrolling element is the app shell's <main>, not the window.
+  useEffect(() => {
+    const container = document.querySelector('main')
+    if (!container) return
+    const onScroll = () => sessionStorage.setItem('recipes-scroll', String(container.scrollTop))
+    container.addEventListener('scroll', onScroll)
+    return () => container.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    if (isLoading || scrollRestored.current) return
+    scrollRestored.current = true
+    const container = document.querySelector('main')
+    if (!container) return
+    if (navigationType === 'POP') {
+      const saved = sessionStorage.getItem('recipes-scroll')
+      if (saved) container.scrollTop = parseInt(saved, 10)
+    } else {
+      container.scrollTop = 0
+    }
+  }, [isLoading, navigationType])
 
   const filtered = useMemo(() => {
     let base = localOrder || recipes

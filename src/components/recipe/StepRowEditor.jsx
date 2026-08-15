@@ -41,7 +41,7 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
   const durationMinutes = durationValue ? parseFloat(durationValue) * (TIME_UNITS.find((u) => u.value === durationUnit)?.multiplier || 1) : null
 
   const isValid = () => {
-    if (type === 'ingredient_addition') return !!ingredientName.trim() && baseQuantity !== ''
+    if (type === 'ingredient_addition') return !!ingredientName.trim()
     if (type === 'wait_time') return durationValue && parseFloat(durationValue) > 0
     if (type === 'action') return !!title
     if (type === 'section_header') return !!title
@@ -57,7 +57,7 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
       ingredient_id: null,
       ingredient_name: type === 'ingredient_addition' ? ingredientName.trim() : null,
       category_name: null,
-      base_quantity: type === 'ingredient_addition' ? parseFloat(baseQuantity) : null,
+      base_quantity: type === 'ingredient_addition' && baseQuantity !== '' ? parseFloat(baseQuantity) : null,
       unit: type === 'ingredient_addition' ? unit || null : null,
       duration_minutes: type === 'wait_time' ? durationMinutes : null,
       is_final_step: type === 'action' ? isFinalStep : false,
