@@ -52,19 +52,3 @@ export async function unsubscribeFromPush() {
   await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint)
   await sub.unsubscribe()
 }
-
-// How many seconds before a wait-timer actually ends this device's push
-// should fire (0 = at the exact end, the original behavior).
-export async function getNotifyLeadSeconds() {
-  const sub = await getPushSubscription()
-  if (!sub) return 0
-  const { data } = await supabase.from('push_subscriptions').select('notify_lead_seconds').eq('endpoint', sub.endpoint).maybeSingle()
-  return data?.notify_lead_seconds ?? 0
-}
-
-export async function setNotifyLeadSeconds(seconds) {
-  const sub = await getPushSubscription()
-  if (!sub) return
-  const { error } = await supabase.from('push_subscriptions').update({ notify_lead_seconds: seconds }).eq('endpoint', sub.endpoint)
-  if (error) throw error
-}
