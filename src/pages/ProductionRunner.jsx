@@ -25,22 +25,21 @@ function StepContent({ step, scaleFactor, timer, consecutiveIngredients = [] }) 
         {step.type === 'ingredient_addition' ? (
           <>
             <h2 className="text-2xl font-heading font-bold mb-6">הוסף רכיבים</h2>
-            <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="w-full grid grid-cols-3 gap-2">
               {ingredientSteps.map((ing, idx) => {
                 const ingCalcQty = ing.base_quantity ? ing.base_quantity * scaleFactor : null
                 return (
-                  <div key={ing.id || idx} className="rounded-2xl px-3 py-4 border border-border shadow-soft min-w-0">
-                    <p className="text-sm text-muted-foreground mb-2 break-words">{ing.ingredient_name || ing.title}</p>
-                    <p className="text-3xl font-bold text-primary tabular-nums">
-                      <Qty value={ingCalcQty} />
+                  <div key={ing.id || idx} className="rounded-2xl px-2 py-3 border border-border shadow-soft min-w-0 text-center">
+                    <p className="text-xl font-bold text-primary tabular-nums">
+                      <Qty value={ingCalcQty} unit={ing.unit} />
                     </p>
-                    <p className="text-base font-semibold text-foreground mt-1">{ing.unit}</p>
+                    <p className="text-xs text-muted-foreground mt-1 break-words">{ing.ingredient_name || ing.title}</p>
                     {scaleFactor !== 1 && (
-                      <p className="text-xs text-muted-foreground mt-2">
+                      <p className="text-[10px] text-muted-foreground mt-1">
                         (<Qty value={ing.base_quantity} unit={ing.unit} /> × {scaleFactor.toFixed(2)})
                       </p>
                     )}
-                    {ing.category_name && <p className="text-xs text-muted-foreground mt-2">קטגוריה: {ing.category_name}</p>}
+                    {ing.category_name && <p className="text-[10px] text-muted-foreground mt-1">{ing.category_name}</p>}
                   </div>
                 )
               })}
