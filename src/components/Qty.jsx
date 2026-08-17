@@ -35,7 +35,7 @@ export default function Qty({ value, unit, className = '' }) {
         ) : (
           <>
             {split.whole > 0 && <span>{split.whole}</span>}
-            <span className="inline-flex flex-col items-center leading-none text-[0.65em] mx-0.5 align-middle relative -top-[0.1em]">
+            <span className="inline-flex flex-col items-center leading-none text-[0.65em] mx-0.5 align-middle">
               <span>{split.num}</span>
               <span className="border-t border-current px-0.5">{split.den}</span>
             </span>
