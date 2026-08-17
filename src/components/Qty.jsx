@@ -29,13 +29,19 @@ export default function Qty({ value, unit, className = '' }) {
           stacked fraction render left-to-right in their natural order
           ("1½") instead of the digits getting reordered by the bidi
           algorithm - the unit word stays outside, in normal RTL flow. */}
-      <span dir="ltr" className="inline-flex items-center">
+      {/* align-middle here (not just on the inner fraction span, which has no
+          effect since it's a flex item, not an inline box) - without it, an
+          inline-flex box defaults to aligning its *bottom* edge with the
+          surrounding text's baseline, which floats the whole ~1.3-line-tall
+          fraction stack high above the adjacent word instead of centering
+          the bar against it. */}
+      <span dir="ltr" className="inline-flex items-center align-middle">
         {split.num === 0 ? (
           split.whole
         ) : (
           <>
             {split.whole > 0 && <span>{split.whole}</span>}
-            <span className="inline-flex flex-col items-center leading-none text-[0.65em] mx-0.5 align-middle">
+            <span className="inline-flex flex-col items-center leading-none text-[0.65em] mx-0.5">
               <span>{split.num}</span>
               <span className="border-t border-current px-0.5">{split.den}</span>
             </span>
