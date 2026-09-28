@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
-import { Plus, Trash2, Copy, Search, BookOpen, MoreVertical, Pencil, Lock, Printer, LayoutGrid, List, GripVertical, Check, ArrowDownAZ, ArrowUpAZ, ArrowUpDown } from 'lucide-react'
+import { Plus, Trash2, Copy, Search, BookOpen, MoreVertical, Pencil, Lock, Printer, LayoutGrid, List, GripVertical, Check, ArrowDownAZ, ArrowUpAZ, ArrowUpDown, Wand2 } from 'lucide-react'
 import { db } from '@/api/db'
 import { useEditor } from '@/hooks/useEditor'
 import { Button } from '@/components/ui/button'
@@ -128,7 +128,7 @@ export default function Recipes() {
         <div>
           <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">מתכונים</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center bg-muted rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
@@ -172,10 +172,16 @@ export default function Recipes() {
             ספר מתכונים
           </Button>
           {editor ? (
-            <Button className="gap-2 shadow-soft" onClick={() => navigate('/recipes/new')}>
-              <Plus className="w-4 h-4" />
-              מתכון חדש
-            </Button>
+            <>
+              <Button variant="outline" className="gap-2" onClick={() => navigate('/recipes/new')}>
+                <Plus className="w-4 h-4" />
+                מתכון חדש
+              </Button>
+              <Button className="gap-2 shadow-soft" onClick={() => navigate('/recipes/quick')}>
+                <Wand2 className="w-4 h-4" />
+                הוספה מהירה
+              </Button>
+            </>
           ) : (
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
               <Lock className="w-3 h-3" />

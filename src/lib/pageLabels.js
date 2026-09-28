@@ -2,6 +2,7 @@
 // page it was left on in human terms, not just the raw path.
 const PATTERNS = [
   [/^\/recipes\/new/, 'מתכון חדש'],
+  [/^\/recipes\/quick/, 'הוספה מהירה'],
   [/^\/recipes\/[^/]+\/edit/, 'עריכת מתכון'],
   [/^\/recipes\/[^/]+/, 'צפייה במתכון'],
   [/^\/recipes/, 'מתכונים'],

@@ -9,6 +9,7 @@ import Layout from '@/components/Layout'
 import Recipes from '@/pages/Recipes'
 import RecipeView from '@/pages/RecipeView'
 import RecipeEditor from '@/pages/RecipeEditor'
+import QuickRecipe from '@/pages/QuickRecipe'
 import GuidedProductionList from '@/pages/GuidedProductionList'
 import ProductionRunner from '@/pages/ProductionRunner'
 import RecipeCategorySettings from '@/pages/RecipeCategorySettings'
@@ -58,6 +59,7 @@ function App() {
             <Route path="/" element={<Navigate to="/recipes" replace />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/recipes/new" element={<RecipeEditor />} />
+            <Route path="/recipes/quick" element={<QuickRecipe />} />
             <Route path="/recipes/:id" element={<RecipeView />} />
             <Route path="/recipes/:id/edit" element={<RecipeEditor />} />
             <Route path="/production" element={<GuidedProductionList />} />
