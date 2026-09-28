@@ -407,7 +407,7 @@ export default function QuickRecipe() {
         <Button variant="ghost" size="icon" onClick={back} title="חזרה">
           <ChevronRight className="w-5 h-5" />
         </Button>
-        <h1 className="flex-1 text-lg font-heading font-bold">הוספה מהירה</h1>
+        <h1 className="flex-1 text-lg font-heading font-bold">מתכון חדש</h1>
         {hasProgress && (
           <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={startOver}>
             התחל מחדש
