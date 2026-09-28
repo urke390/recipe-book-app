@@ -231,6 +231,49 @@ function StepQuestions({ type, initial, units, onDone, onCancel }) {
   )
 }
 
+// Inline "new parameter" form for the parameters screen, so a worker who
+// needs a parameter that doesn't exist yet can create it without leaving
+// the wizard (and losing their place) for the Parameters settings page.
+function NewParameterForm({ onCreated, onCancel }) {
+  const queryClient = useQueryClient()
+  const { toast } = useToast()
+  const [name, setName] = useState('')
+  const [unit, setUnit] = useState('')
+  const createMutation = useMutation({
+    mutationFn: () => db.Parameter.create({ name: name.trim(), unit: unit.trim() || null }),
+    onSuccess: (param) => {
+      queryClient.invalidateQueries({ queryKey: ['parameters'] })
+      onCreated(param)
+    },
+    onError: (e) => toast({ title: 'יצירת הפרמטר נכשלה', description: e?.message, variant: 'destructive' }),
+  })
+  const submit = () => name.trim() && !createMutation.isPending && createMutation.mutate()
+  const onKeyDown = (e) => e.key === 'Enter' && submit()
+
+  return (
+    <div className="space-y-3 bg-card border border-border rounded-2xl p-5 shadow-soft">
+      <p className="font-semibold">פרמטר חדש</p>
+      <div>
+        <label className="block text-sm font-medium mb-1.5">מה בודקים?</label>
+        <Input autoFocus value={name} onChange={(e) => setName(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: טמפרטורת חלב" className="h-11 text-base" />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1.5">באיזו יחידה? (אפשר להשאיר ריק)</label>
+        <Input value={unit} onChange={(e) => setUnit(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: °C" className="h-11 text-base w-40" />
+      </div>
+      <div className="flex gap-2 pt-1">
+        <Button onClick={submit} disabled={!name.trim() || createMutation.isPending} className="flex-1 h-11 gap-2">
+          <Check className="w-4 h-4" />
+          {createMutation.isPending ? 'יוצר...' : 'צור והוסף למתכון'}
+        </Button>
+        <Button variant="outline" onClick={onCancel} className="h-11">
+          ביטול
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 // "Quick add" - a question-by-question wizard for building a recipe, meant
 // for workers who don't know the full editor. It lives alongside
 // RecipeEditor (not instead of it) and writes exactly the same recipe /
@@ -245,6 +288,7 @@ export default function QuickRecipe() {
   const [draft, setDraft] = useState(loadDraft)
   const [stepType, setStepType] = useState(null) // step type currently being asked about
   const [editingIndex, setEditingIndex] = useState(null)
+  const [addingParameter, setAddingParameter] = useState(false)
   const nameInput = useRef(null)
 
   const { screen, name, description, categoryId, steps, parameterValues } = draft
@@ -483,17 +527,32 @@ export default function QuickRecipe() {
 
       {screen === 'parameters' && (
         <Question title="יש ערכים שצריך לבדוק במהלך הייצור?" subtitle="למשל טמפרטורה או חומציות. לא חובה - אפשר לדלג">
-          {allParameters.length === 0 ? (
-            <p className="text-sm text-muted-foreground">אין פרמטרים מוגדרים במערכת</p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {allParameters.map((p) => (
-                <ChoiceChip key={p.id} active={parameterValues.some((pv) => pv.parameter_id === p.id)} onClick={() => toggleParameter(p.id)}>
-                  {parameterValues.some((pv) => pv.parameter_id === p.id) ? <Check className="w-3.5 h-3.5 inline ml-1" /> : <Plus className="w-3.5 h-3.5 inline ml-1" />}
-                  {p.name}
-                </ChoiceChip>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-2">
+            {allParameters.map((p) => (
+              <ChoiceChip key={p.id} active={parameterValues.some((pv) => pv.parameter_id === p.id)} onClick={() => toggleParameter(p.id)}>
+                {parameterValues.some((pv) => pv.parameter_id === p.id) ? <Check className="w-3.5 h-3.5 inline ml-1" /> : <Plus className="w-3.5 h-3.5 inline ml-1" />}
+                {p.name}
+              </ChoiceChip>
+            ))}
+            {!addingParameter && (
+              <button
+                type="button"
+                onClick={() => setAddingParameter(true)}
+                className="px-4 py-2.5 rounded-xl border border-dashed border-primary/60 text-primary text-sm font-medium hover:bg-primary/5 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5 inline ml-1" />
+                פרמטר חדש
+              </button>
+            )}
+          </div>
+          {addingParameter && (
+            <NewParameterForm
+              onCreated={(param) => {
+                setAddingParameter(false)
+                toggleParameter(param.id)
+              }}
+              onCancel={() => setAddingParameter(false)}
+            />
           )}
           {parameterValues.map((pv) => {
             const param = allParameters.find((p) => p.id === pv.parameter_id)
