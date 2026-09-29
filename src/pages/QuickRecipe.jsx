@@ -6,6 +6,7 @@ import { db } from '@/api/db'
 import { useEditor } from '@/hooks/useEditor'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { AutoTextarea } from '@/components/ui/auto-textarea'
 import { useToast } from '@/components/ui/use-toast'
 import ParamValueEditor from '@/components/recipe/ParamValueEditor'
 import { getStepDisplayTitle, STEP_TYPE_COLORS, STEP_TYPE_LABELS } from '@/lib/stepUtils'
@@ -28,14 +29,17 @@ const TIME_UNITS = [
 
 // Screens of the wizard, in order. 'steps' is a loop - the user keeps
 // adding steps there until they say they're done.
-const SCREENS = ['name', 'category', 'description', 'steps', 'parameters', 'summary']
+const SCREENS = ['name', 'category', 'steps', 'parameters', 'summary']
 
-const EMPTY_DRAFT = { screen: 'name', name: '', description: '', categoryId: null, steps: [], parameterValues: [] }
+const EMPTY_DRAFT = { screen: 'name', name: '', categoryId: null, steps: [], parameterValues: [] }
 
 function loadDraft() {
   try {
     const raw = localStorage.getItem(DRAFT_KEY)
-    return raw ? { ...EMPTY_DRAFT, ...JSON.parse(raw) } : EMPTY_DRAFT
+    if (!raw) return EMPTY_DRAFT
+    const { description, ...saved } = JSON.parse(raw) // description screen was removed
+    const draft = { ...EMPTY_DRAFT, ...saved }
+    return SCREENS.includes(draft.screen) ? draft : { ...draft, screen: 'steps' }
   } catch {
     return EMPTY_DRAFT
   }
@@ -137,7 +141,10 @@ function StepQuestions({ type, initial, units, onDone, onCancel }) {
   }
 
   const onKeyDown = (e) => {
-    if (e.key === 'Enter') submit()
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      submit()
+    }
   }
 
   const choice = STEP_CHOICES.find((c) => c.type === type)
@@ -192,7 +199,7 @@ function StepQuestions({ type, initial, units, onDone, onCancel }) {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1.5">בשביל מה מחכים? (אפשר להשאיר ריק)</label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: התססה" className="h-11 text-base" />
+            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: התססה" className="min-h-[2.75rem] py-2.5 md:text-base" />
           </div>
         </>
       )}
@@ -200,21 +207,21 @@ function StepQuestions({ type, initial, units, onDone, onCancel }) {
       {type === 'action' && (
         <div>
           <label className="block text-sm font-medium mb-1.5">מה עושים?</label>
-          <Input ref={firstInput} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לערבב היטב" className="h-11 text-base" />
+          <AutoTextarea ref={firstInput} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לערבב היטב" className="min-h-[2.75rem] py-2.5 md:text-base" />
         </div>
       )}
 
       {type === 'section_header' && (
         <div>
           <label className="block text-sm font-medium mb-1.5">איך קוראים לחלק הזה?</label>
-          <Input ref={firstInput} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לציפוי" className="h-11 text-base" />
+          <AutoTextarea ref={firstInput} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לציפוי" className="min-h-[2.75rem] py-2.5 md:text-base" />
         </div>
       )}
 
       {type !== 'section_header' && (
         <div>
           <label className="block text-sm font-medium mb-1.5">יש הוראות נוספות? (אפשר להשאיר ריק)</label>
-          <Input value={instructions} onChange={(e) => setInstructions(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לאט, בלי להקציף" className="h-11 text-base" />
+          <AutoTextarea value={instructions} onChange={(e) => setInstructions(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לאט, בלי להקציף" className="min-h-[2.75rem] py-2.5 md:text-base" />
         </div>
       )}
 
@@ -291,7 +298,7 @@ export default function QuickRecipe() {
   const [addingParameter, setAddingParameter] = useState(false)
   const nameInput = useRef(null)
 
-  const { screen, name, description, categoryId, steps, parameterValues } = draft
+  const { screen, name, categoryId, steps, parameterValues } = draft
   const update = (patch) => setDraft((d) => ({ ...d, ...patch }))
   const screenIndex = SCREENS.indexOf(screen)
 
@@ -346,7 +353,6 @@ export default function QuickRecipe() {
     mutationFn: async () => {
       const recipe = await db.Recipe.create({
         name: name.trim(),
-        description: description.trim() || null,
         category_id: categoryId,
         parameter_ids: parameterValues.map((pv) => pv.parameter_id),
         parameter_values: parameterValues,
@@ -455,22 +461,6 @@ export default function QuickRecipe() {
         </Question>
       )}
 
-      {screen === 'description' && (
-        <Question title="רוצה להוסיף תיאור קצר?" subtitle="לא חובה - אפשר לדלג">
-          <Input
-            value={description}
-            onChange={(e) => update({ description: e.target.value })}
-            onKeyDown={(e) => e.key === 'Enter' && next()}
-            placeholder="לדוגמה: גבינה רכה למריחה"
-            className="h-12 text-base"
-          />
-          <Button onClick={next} className="w-full h-12 gap-2 text-base">
-            {description.trim() ? 'המשך' : 'דלג'}
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-        </Question>
-      )}
-
       {screen === 'steps' && (
         <Question
           title={steps.length === 0 ? 'מה עושים ראשון?' : 'מה עושים אחר כך?'}
@@ -573,16 +563,10 @@ export default function QuickRecipe() {
               <p className="text-xs text-muted-foreground">שם</p>
               <p className="font-bold text-lg">{name}</p>
             </button>
-            <div className="flex gap-6">
-              <button type="button" onClick={() => goTo('category')} className="text-right">
-                <p className="text-xs text-muted-foreground">קטגוריה</p>
-                <p className="text-sm font-medium">{categoryName || 'ללא'}</p>
-              </button>
-              <button type="button" onClick={() => goTo('description')} className="text-right min-w-0">
-                <p className="text-xs text-muted-foreground">תיאור</p>
-                <p className="text-sm font-medium truncate">{description.trim() || 'ללא'}</p>
-              </button>
-            </div>
+            <button type="button" onClick={() => goTo('category')} className="block text-right">
+              <p className="text-xs text-muted-foreground">קטגוריה</p>
+              <p className="text-sm font-medium">{categoryName || 'ללא'}</p>
+            </button>
             <div>
               <button type="button" onClick={() => goTo('steps')} className="text-xs text-muted-foreground mb-1.5">
                 שלבים ({steps.length}) · לחץ לעריכה

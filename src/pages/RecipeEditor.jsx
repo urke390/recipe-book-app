@@ -48,8 +48,6 @@ export default function RecipeEditor() {
 
   const [tab, setTab] = useState('details')
   const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
   const [categoryId, setCategoryId] = useState(null)
   const [addingStep, setAddingStep] = useState(false)
   const [editingStepId, setEditingStepId] = useState(null)
@@ -66,8 +64,6 @@ export default function RecipeEditor() {
   useEffect(() => {
     if (recipe) {
       setName(recipe.name || '')
-      setDescription(recipe.description || '')
-      setImageUrl(recipe.image_url || '')
       setCategoryId(recipe.category_id || null)
     }
   }, [recipe?.id])
@@ -88,7 +84,7 @@ export default function RecipeEditor() {
 
   const saveDetailsMutation = useMutation({
     mutationFn: async () => {
-      const data = { name, description: description || null, image_url: imageUrl || null, category_id: categoryId }
+      const data = { name, category_id: categoryId }
       if (isNew) return db.Recipe.create(data)
       return db.Recipe.update(id, data)
     },
@@ -219,14 +215,6 @@ export default function RecipeEditor() {
           <div>
             <Label className="mb-1 block">שם מתכון *</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="לדוגמה: עוגת שוקולד" disabled={!editor} />
-          </div>
-          <div>
-            <Label className="mb-1 block">תיאור</Label>
-            <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="תיאור קצר..." disabled={!editor} />
-          </div>
-          <div>
-            <Label className="mb-1 block">קישור לתמונה</Label>
-            <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." disabled={!editor} dir="ltr" />
           </div>
           <div>
             <Label className="mb-1 block">קטגוריה</Label>

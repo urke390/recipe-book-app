@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { db } from '@/api/db'
 import { Input } from '@/components/ui/input'
+import { AutoTextarea } from '@/components/ui/auto-textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Check, X, GripVertical } from 'lucide-react'
 import { STEP_TYPE_COLORS } from '@/lib/stepUtils'
@@ -122,13 +123,13 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
                 ))}
               </SelectContent>
             </Select>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} className="h-7 text-sm flex-1 min-w-24 border-dashed" placeholder="בשביל מה ממתינים?" />
+            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder="בשביל מה ממתינים?" />
           </>
         )}
 
         {type === 'action' && (
           <>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} className="h-7 text-sm flex-1 min-w-24 border-dashed" placeholder="שם הפעולה..." />
+            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder="שם הפעולה..." />
             <label className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap cursor-pointer flex-shrink-0">
               <input type="checkbox" checked={isFinalStep} onChange={(e) => setIsFinalStep(e.target.checked)} className="w-3 h-3 accent-primary" />
               פעולה אחרונה בלבד
@@ -136,10 +137,10 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
           </>
         )}
 
-        {type === 'section_header' && <Input value={title} onChange={(e) => setTitle(e.target.value)} className="h-7 text-sm flex-1 min-w-24 border-dashed" placeholder="לדוגמה: לציפוי..." />}
+        {type === 'section_header' && <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder="לדוגמה: לציפוי..." />}
 
         {type !== 'section_header' && (
-          <Input value={instructions} onChange={(e) => setInstructions(e.target.value)} className="h-7 text-sm w-full border-dashed mt-1" placeholder="הוראות נוספות (אופציונלי)..." />
+          <AutoTextarea value={instructions} onChange={(e) => setInstructions(e.target.value)} className="text-sm border-dashed mt-1" placeholder="הוראות נוספות (אופציונלי)..." />
         )}
       </div>
 
