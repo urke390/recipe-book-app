@@ -67,9 +67,11 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
 
   return (
     <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl border border-border bg-card shadow-soft">
-      <div className={`mt-1.5 text-muted-foreground/40 cursor-grab flex-shrink-0 ${dragHandleProps ? '' : 'invisible'}`} {...(dragHandleProps || {})}>
-        <GripVertical className="w-4 h-4" />
-      </div>
+      {dragHandleProps && (
+        <div className="mt-1.5 text-muted-foreground/40 cursor-grab flex-shrink-0" {...dragHandleProps}>
+          <GripVertical className="w-4 h-4" />
+        </div>
+      )}
 
       <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 bg-secondary text-secondary-foreground">
         {stepIndex != null ? stepIndex + 1 : ''}
@@ -90,7 +92,7 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
 
         {type === 'ingredient_addition' && (
           <>
-            <Input value={ingredientName} onChange={(e) => setIngredientName(e.target.value)} className="h-7 text-sm flex-1 min-w-24 border-dashed" placeholder="שם הרכיב..." />
+            <AutoTextarea value={ingredientName} onChange={(e) => setIngredientName(e.target.value)} className="text-sm border-dashed" placeholder="שם הרכיב..." />
             <Input type="number" value={baseQuantity} onChange={(e) => setBaseQuantity(e.target.value)} className="h-7 text-sm w-16 border-dashed" placeholder="כמות" />
             <Select value={unit || 'none'} onValueChange={(v) => setUnit(v === 'none' ? '' : v)}>
               <SelectTrigger className="h-7 text-sm w-20 border-dashed">

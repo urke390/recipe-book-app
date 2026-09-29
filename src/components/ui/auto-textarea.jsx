@@ -4,8 +4,10 @@ import { cn } from '@/lib/utils'
 
 // Single-line-looking text field that grows downward to fit its content, so
 // long step text (common in action steps) stays fully visible while editing -
-// a plain <input> cut it off, especially on a phone. Also re-fits on width
-// changes (rotating a phone, resizing the window) since those re-wrap text.
+// a plain <input> cut it off, especially on a phone. Also re-fits whenever
+// the text can re-wrap without the value changing: width changes (rotating a
+// phone, resizing the window) and the web font finishing loading - measuring
+// with the fallback font left the last line hidden.
 const AutoTextarea = React.forwardRef(({ value, className, ...props }, forwardedRef) => {
   const ref = React.useRef(null)
   React.useImperativeHandle(forwardedRef, () => ref.current)
@@ -30,7 +32,13 @@ const AutoTextarea = React.forwardRef(({ value, className, ...props }, forwarded
       }
     })
     ro.observe(ref.current)
-    return () => ro.disconnect()
+    const fonts = document.fonts
+    fonts?.ready.then(fit)
+    fonts?.addEventListener?.('loadingdone', fit)
+    return () => {
+      ro.disconnect()
+      fonts?.removeEventListener?.('loadingdone', fit)
+    }
   }, [fit])
 
   return (
