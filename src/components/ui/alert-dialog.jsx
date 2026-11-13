@@ -36,7 +36,7 @@ const AlertDialogContent = React.forwardRef(({ className, ...props }, ref) => (
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
 
 const AlertDialogHeader = ({ className, ...props }) => (
-  <div className={cn("flex flex-col space-y-2 text-right", className)} {...props} />
+  <div className={cn("flex flex-col space-y-2 text-start", className)} {...props} />
 )
 AlertDialogHeader.displayName = "AlertDialogHeader"
 

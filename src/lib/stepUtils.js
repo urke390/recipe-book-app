@@ -1,9 +1,10 @@
+import { t } from '@/lib/i18n'
 export const STEP_TYPE_LABELS = {
-  ingredient_addition: 'הוספת רכיב',
-  wait_time: 'זמן המתנה',
-  action: 'פעולה',
-  parameter_display: 'פרמטר',
-  section_header: 'כותרת משנה',
+  ingredient_addition: t('הוספת רכיב'),
+  wait_time: t('זמן המתנה'),
+  action: t('פעולה'),
+  parameter_display: t('פרמטר'),
+  section_header: t('כותרת משנה'),
 }
 
 export const STEP_TYPE_COLORS = {
@@ -16,29 +17,29 @@ export const STEP_TYPE_COLORS = {
 
 export function formatDurationDisplay(minutes) {
   if (!minutes) return ''
-  if (minutes >= 1440 && minutes % 1440 === 0) return `${minutes / 1440} ימים`
-  if (minutes >= 60 && minutes % 60 === 0) return `${minutes / 60} שעות`
-  return `${minutes} דקות`
+  if (minutes >= 1440 && minutes % 1440 === 0) return t('{n} ימים', { n: minutes / 1440 })
+  if (minutes >= 60 && minutes % 60 === 0) return t('{n} שעות', { n: minutes / 60 })
+  return t('{n} דקות', { n: minutes })
 }
 
 export function getStepDisplayTitle(step) {
   if (step.title) return step.title
   switch (step.type) {
     case 'ingredient_addition':
-      if (!step.ingredient_name) return 'הוספת רכיב'
+      if (!step.ingredient_name) return t('הוספת רכיב')
       if (step.category_name && step.category_name !== step.ingredient_name) return `${step.category_name} — ${step.ingredient_name}`
       return step.ingredient_name
     case 'wait_time':
-      if (!step.duration_minutes) return 'זמן המתנה'
-      return `המתן ${formatDurationDisplay(step.duration_minutes)}`
+      if (!step.duration_minutes) return t('זמן המתנה')
+      return t('המתן {d}', { d: formatDurationDisplay(step.duration_minutes) })
     case 'action':
-      return 'פעולה'
+      return t('פעולה')
     case 'parameter_display':
-      return step.parameter_name || 'פרמטר'
+      return step.parameter_name || t('פרמטר')
     case 'section_header':
-      return 'כותרת'
+      return t('כותרת')
     default:
-      return 'שלב'
+      return t('שלב')
   }
 }
 

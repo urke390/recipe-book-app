@@ -9,31 +9,33 @@ import EditCodeDialog from '@/components/EditCodeDialog'
 import FeedbackWidget from '@/components/FeedbackWidget'
 import GlobalTimerWatcher from '@/components/GlobalTimerWatcher'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { t, isRTL } from '@/lib/i18n'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 const navItems = [
-  { path: '/recipes', label: 'מתכונים', icon: BookOpen },
-  { path: '/production', label: 'ייצור מודרך', icon: ChefHat },
+  { path: '/recipes', label: t('מתכונים'), icon: BookOpen },
+  { path: '/production', label: t('ייצור מודרך'), icon: ChefHat },
 ]
 
 const settingsItems = [
-  { path: '/settings/recipe-categories', label: 'קטגוריות מתכונים', icon: Tag },
-  { path: '/parameters', label: 'פרמטרים', icon: Sliders },
-  { path: '/units', label: 'יחידות מידה', icon: Ruler },
-  { path: '/alert-sound', label: 'צליל התראה', icon: Bell },
+  { path: '/settings/recipe-categories', label: t('קטגוריות מתכונים'), icon: Tag },
+  { path: '/parameters', label: t('פרמטרים'), icon: Sliders },
+  { path: '/units', label: t('יחידות מידה'), icon: Ruler },
+  { path: '/alert-sound', label: t('צליל התראה'), icon: Bell },
 ]
 
 export default function Layout() {
   const location = useLocation()
   const { editor } = useEditor()
-  const { branding } = useBranding()
+  const { displayTitle } = useBranding()
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const visibleSettingsItems = editor
     ? [
         ...settingsItems,
-        { path: '/settings/edit-code', label: 'קוד עריכה', icon: KeyRound },
-        { path: '/settings/feedback', label: 'הערות ומשוב', icon: MessageSquareText },
-        { path: '/settings/branding', label: 'עיצוב', icon: Palette },
+        { path: '/settings/edit-code', label: t('קוד עריכה'), icon: KeyRound },
+        { path: '/settings/feedback', label: t('הערות ומשוב'), icon: MessageSquareText },
+        { path: '/settings/branding', label: t('עיצוב'), icon: Palette },
       ]
     : settingsItems
 
@@ -52,7 +54,7 @@ export default function Layout() {
         style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' }}
       >
         <nav className="flex items-center gap-2 w-full max-w-5xl">
-          <span className="font-heading font-bold text-white text-lg ml-4 flex items-center gap-2">{branding.title}</span>
+          <span className="font-heading font-bold text-white text-lg me-4 flex items-center gap-2">{displayTitle}</span>
           {navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.path)
@@ -69,7 +71,7 @@ export default function Layout() {
               </Link>
             )
           })}
-          <div className="mr-auto flex items-center gap-2">
+          <div className="ms-auto flex items-center gap-2">
             <EditCodeDialog />
             <div className="relative">
               <button
@@ -79,10 +81,10 @@ export default function Layout() {
                 }`}
               >
                 <Settings className="w-4 h-4" />
-                <span>הגדרות</span>
+                <span>{t('הגדרות')}</span>
               </button>
               {settingsOpen && (
-                <div className="absolute top-full left-0 mt-1 bg-card rounded-lg shadow-lg border border-border py-2 z-50 min-w-44">
+                <div className="absolute top-full end-0 mt-1 bg-card rounded-lg shadow-lg border border-border py-2 z-50 min-w-44">
                   {visibleSettingsItems.map((item) => (
                     <Link
                       key={item.path}
@@ -94,6 +96,9 @@ export default function Layout() {
                       <span>{item.label}</span>
                     </Link>
                   ))}
+                  <div className="border-t border-border mt-2 pt-2 px-4">
+                    <LanguageSwitcher />
+                  </div>
                 </div>
               )}
             </div>
@@ -107,7 +112,7 @@ export default function Layout() {
           style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.85))' }}
         >
           <div className="flex items-center gap-2.5">
-            <span className="font-heading font-bold text-sm text-white">{branding.title}</span>
+            <span className="font-heading font-bold text-sm text-white">{displayTitle}</span>
           </div>
           <div className="flex items-center gap-1">
             <EditCodeDialog />
@@ -115,14 +120,14 @@ export default function Layout() {
               <Link to="/production">
                 <span className="text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1.5 bg-white/30 text-white">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  {activeSessions.length} פעיל
+                  {t('{n} פעיל', { n: activeSessions.length })}
                 </span>
               </Link>
             )}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2 -ml-1 rounded-lg text-white/90 hover:bg-white/15 transition-colors"
-              title="תפריט"
+              className="p-2 -me-1 rounded-lg text-white/90 hover:bg-white/15 transition-colors"
+              title={t('תפריט')}
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -133,7 +138,7 @@ export default function Layout() {
           <Outlet />
         </main>
 
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border flex z-20 shadow-lg">
+        <nav className="md:hidden fixed bottom-0 end-0 start-0 bg-card border-t border-border flex z-20 shadow-lg">
           {navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.path)
@@ -154,9 +159,9 @@ export default function Layout() {
       </div>
 
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="right" className="w-72 flex flex-col">
+        <SheetContent side={isRTL() ? 'right' : 'left'} className="w-72 flex flex-col">
           <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">{branding.title}</SheetTitle>
+            <SheetTitle className="flex items-center gap-2">{displayTitle}</SheetTitle>
           </SheetHeader>
           <nav className="flex flex-col gap-1 mt-4">
             {visibleSettingsItems.map((item) => (
@@ -173,6 +178,9 @@ export default function Layout() {
               </Link>
             ))}
           </nav>
+          <div className="mt-auto border-t border-border pt-4 px-3">
+            <LanguageSwitcher />
+          </div>
         </SheetContent>
       </Sheet>
 

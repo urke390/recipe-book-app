@@ -1,8 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { db } from '@/api/db'
+import { t } from '@/lib/i18n'
 
-export const DEFAULT_BRANDING = { title: 'ספר מתכונים ביתי', primary_color: '152 48% 30%', background_color: '40 33% 97%' }
+// Stored in Hebrew (the DB default); shown translated while untouched.
+const DEFAULT_TITLE = 'ספר מתכונים ביתי'
+const displayTitleOf = (title) => (title === DEFAULT_TITLE ? t(DEFAULT_TITLE) : title)
+
+export const DEFAULT_BRANDING = { title: DEFAULT_TITLE, primary_color: '152 48% 30%', background_color: '40 33% 97%' }
 
 // Singleton row (app_branding) driving the app title and the two colors
 // that matter most for the app's look: --primary (header/buttons/active
@@ -19,7 +24,7 @@ export function useBranding() {
     document.documentElement.style.setProperty('--primary', b.primary_color)
     document.documentElement.style.setProperty('--ring', b.primary_color)
     document.documentElement.style.setProperty('--background', b.background_color)
-    document.title = b.title
+    document.title = displayTitleOf(b.title)
   }, [branding])
 
   const updateMutation = useMutation({
@@ -27,5 +32,6 @@ export function useBranding() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['branding'] }),
   })
 
-  return { branding: branding || DEFAULT_BRANDING, updateBranding: updateMutation.mutate, isUpdating: updateMutation.isPending }
+  const b = branding || DEFAULT_BRANDING
+  return { branding: b, displayTitle: displayTitleOf(b.title), updateBranding: updateMutation.mutate, isUpdating: updateMutation.isPending }
 }

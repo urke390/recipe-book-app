@@ -7,6 +7,7 @@ import RecipePrintSection from '@/components/print/RecipePrintSection'
 import PrintModal from '@/components/print/PrintModal'
 import RecipeBookSpread from '@/components/print/RecipeBookSpread'
 import FeedbackWidget from '@/components/FeedbackWidget'
+import { t } from '@/lib/i18n'
 
 // recipeId/volume props let this be opened as an in-app modal (see onClose);
 // without them it reads from the route (/print/recipe/:id) and renders as a
@@ -49,11 +50,11 @@ export default function PrintRecipe({ recipeId: recipeIdProp, volume: volumeProp
     return (
       <PrintModal
         onClose={onClose}
-        title="תצוגה להדפסה"
+        title={t('תצוגה להדפסה')}
         actions={
           <Button size="sm" className="gap-1.5" onClick={() => window.print()}>
             <Printer className="w-3.5 h-3.5" />
-            הדפס
+            {t('הדפס')}
           </Button>
         }
       >
@@ -66,12 +67,12 @@ export default function PrintRecipe({ recipeId: recipeIdProp, volume: volumeProp
     <div className="min-h-screen bg-background">
       <div className="no-print sticky top-0 bg-card border-b border-border p-3 flex items-center gap-2 z-10">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="dir-icon w-5 h-5" />
         </Button>
-        <span className="flex-1 font-semibold text-sm">תצוגה להדפסה</span>
+        <span className="flex-1 font-semibold text-sm">{t('תצוגה להדפסה')}</span>
         <Button size="sm" className="gap-1.5" onClick={() => window.print()}>
           <Printer className="w-3.5 h-3.5" />
-          הדפס
+          {t('הדפס')}
         </Button>
       </div>
       {content}

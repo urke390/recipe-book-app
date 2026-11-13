@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import RecipeBookSpread from '@/components/print/RecipeBookSpread'
 import StartGuidedProductionModal from '@/components/StartGuidedProductionModal'
 import PrintRecipe from '@/pages/print/PrintRecipe'
+import { t } from '@/lib/i18n'
 
 // Read-only recipe view: ingredients, steps and parameters for reading
 // through a recipe. Entering guided production only happens via the
@@ -43,9 +44,9 @@ export default function RecipeView() {
   if (isError || !recipe) {
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto w-full text-center py-24">
-        <p className="text-muted-foreground font-medium">המתכון לא נמצא</p>
+        <p className="text-muted-foreground font-medium">{t('המתכון לא נמצא')}</p>
         <Button variant="outline" className="mt-4" onClick={() => navigate('/recipes')}>
-          חזרה למתכונים
+          {t('חזרה למתכונים')}
         </Button>
       </div>
     )
@@ -55,7 +56,7 @@ export default function RecipeView() {
     <div className="p-4 md:p-8 max-w-3xl mx-auto w-full">
       <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-3 bg-background/95 backdrop-blur-sm flex items-center gap-3 mb-6">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="dir-icon w-5 h-5" />
         </Button>
         <div className="flex-1">
           <h1 className="text-xl md:text-2xl font-heading font-bold">{recipe.name}</h1>
@@ -63,12 +64,12 @@ export default function RecipeView() {
         </div>
         <Button variant="outline" size="sm" className="gap-1.5 flex-shrink-0" onClick={() => setPrinting(true)}>
           <Printer className="w-3.5 h-3.5" />
-          הדפס
+          {t('הדפס')}
         </Button>
         {editor && (
           <Button variant="outline" size="sm" className="gap-1.5 flex-shrink-0" onClick={() => navigate(`/recipes/${id}/edit`)}>
             <Pencil className="w-3.5 h-3.5" />
-            ערוך
+            {t('ערוך')}
           </Button>
         )}
       </div>
@@ -85,7 +86,7 @@ export default function RecipeView() {
 
       <Button size="lg" className="w-full gap-2 shadow-soft" onClick={() => setStarting(true)}>
         <ChefHat className="w-5 h-5" />
-        התחל ייצור מודרך
+        {t('התחל ייצור מודרך')}
       </Button>
 
       {starting && (

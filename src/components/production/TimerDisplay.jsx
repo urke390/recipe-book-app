@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n'
 // Presentational analog countdown. `remaining`/`total` are in seconds; the
 // caller (useServerTimer) derives them from the server's step_started_at.
 export default function TimerDisplay({ remaining, total, inline = false }) {
@@ -73,8 +74,8 @@ export default function TimerDisplay({ remaining, total, inline = false }) {
     <div className={`mx-4 mb-4 rounded-xl p-4 border flex items-center gap-5 ${isWarning ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200'}`}>
       {clock}
       <div className="flex-1 min-w-0">
-        <p className={`font-semibold text-base ${isWarning ? 'text-red-600' : 'text-blue-700'}`}>{isWarning ? '⚠️ פחות מדקה נותרה!' : '⏳ המתנה בתהליך'}</p>
-        <p className={`text-sm mt-0.5 ${isWarning ? 'text-red-500' : 'text-blue-600'}`}>{mins > 0 ? `נותרו ${mins} דק' ו-${secs} שנ'` : `נותרו ${secs} שניות`}</p>
+        <p className={`font-semibold text-base ${isWarning ? 'text-red-600' : 'text-blue-700'}`}>{isWarning ? t('⚠️ פחות מדקה נותרה!') : t('⏳ המתנה בתהליך')}</p>
+        <p className={`text-sm mt-0.5 ${isWarning ? 'text-red-500' : 'text-blue-600'}`}>{mins > 0 ? t("נותרו {mins} דק' ו-{secs} שנ'", { mins, secs }) : t('נותרו {secs} שניות', { secs })}</p>
         <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: isWarning ? '#fca5a5' : '#93c5fd' }}>
           <div className="h-1.5 rounded-full transition-all duration-1000" style={{ width: `${progress * 100}%`, background: isWarning ? '#ef4444' : '#2563eb' }} />
         </div>

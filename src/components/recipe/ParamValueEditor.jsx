@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Minus, Plus } from 'lucide-react'
+import { t } from '@/lib/i18n'
 
 // onChange (a full recipe save) used to fire on every keystroke, which meant
 // every character typed waited on a round-trip to the server and the
@@ -54,24 +55,24 @@ export default function ParamValueEditor({ param, pv, onUpdate }) {
             onClick={() => onUpdate('value_type', 'single')}
             className={`px-3 py-1 transition-colors ${pv.value_type === 'single' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary text-muted-foreground'}`}
           >
-            ערך יחיד
+            {t('ערך יחיד')}
           </button>
           <button
             onClick={() => onUpdate('value_type', 'range')}
             className={`px-3 py-1 transition-colors ${pv.value_type !== 'single' ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary text-muted-foreground'}`}
           >
-            טווח
+            {t('טווח')}
           </button>
         </div>
       </div>
 
       {pv.value_type === 'single' ? (
-        <StepperInput value={pv.value ?? ''} onChange={(v) => onUpdate('value', v)} placeholder="ערך" />
+        <StepperInput value={pv.value ?? ''} onChange={(v) => onUpdate('value', v)} placeholder={t('ערך')} />
       ) : (
         <div className="flex items-center gap-2">
-          <StepperInput value={pv.value_min ?? ''} onChange={(v) => onUpdate('value_min', v)} placeholder="מינימום" />
+          <StepperInput value={pv.value_min ?? ''} onChange={(v) => onUpdate('value_min', v)} placeholder={t('מינימום')} />
           <span className="text-sm text-muted-foreground flex-shrink-0">–</span>
-          <StepperInput value={pv.value_max ?? ''} onChange={(v) => onUpdate('value_max', v)} placeholder="מקסימום" />
+          <StepperInput value={pv.value_max ?? ''} onChange={(v) => onUpdate('value_max', v)} placeholder={t('מקסימום')} />
         </div>
       )}
     </div>

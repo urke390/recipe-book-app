@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Volume2, Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { t } from '@/lib/i18n'
 
 export const ALARM_SOUNDS = [
-  { id: 'beep', label: 'ביפ קצר', description: 'צפצוף קצר וחד' },
-  { id: 'bell', label: 'פעמון', description: 'צלצול פעמון עדין' },
-  { id: 'alarm', label: 'אזעקה', description: 'ביפים חוזרים מהירים' },
-  { id: 'chime', label: 'צלצול נעים', description: 'מנגינה קצרה ונעימה' },
+  { id: 'beep', label: t('ביפ קצר'), description: t('צפצוף קצר וחד') },
+  { id: 'bell', label: t('פעמון'), description: t('צלצול פעמון עדין') },
+  { id: 'alarm', label: t('אזעקה'), description: t('ביפים חוזרים מהירים') },
+  { id: 'chime', label: t('צלצול נעים'), description: t('מנגינה קצרה ונעימה') },
 ]
 
 export function getAlarmSoundId() {
@@ -94,7 +95,7 @@ export default function SoundSettings() {
     <div className="space-y-3">
       <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
         <Volume2 className="w-4 h-4 text-primary" />
-        צליל התראה
+        {t('צליל התראה')}
       </h3>
       <div className="grid grid-cols-1 gap-2">
         {ALARM_SOUNDS.map((sound) => (
@@ -117,7 +118,7 @@ export default function SoundSettings() {
                 e.stopPropagation()
                 playAlarmById(sound.id)
               }}
-              title="השמע דוגמה"
+              title={t('השמע דוגמה')}
             >
               <Play className="w-3.5 h-3.5" />
             </Button>

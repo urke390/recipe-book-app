@@ -15,6 +15,7 @@ import CyclesNav from '@/components/production/CyclesNav'
 import PrintRecipe from '@/pages/print/PrintRecipe'
 import { getStepDisplayTitle } from '@/lib/stepUtils'
 import Qty from '@/components/Qty'
+import { t } from '@/lib/i18n'
 
 function StepContent({ step, scaleFactor, timer, consecutiveIngredients = [] }) {
   const ingredientSteps = step.type === 'ingredient_addition' ? [step, ...consecutiveIngredients] : []
@@ -24,7 +25,7 @@ function StepContent({ step, scaleFactor, timer, consecutiveIngredients = [] }) 
       <div className="bg-card border border-border rounded-2xl p-6 md:p-10 shadow-card min-h-48 flex flex-col items-center text-center">
         {step.type === 'ingredient_addition' ? (
           <>
-            <h2 className="text-2xl font-heading font-bold mb-6">הוסף רכיבים</h2>
+            <h2 className="text-2xl font-heading font-bold mb-6">{t('הוסף רכיבים')}</h2>
             <div className="w-full grid grid-cols-3 gap-2">
               {ingredientSteps.map((ing, idx) => {
                 const ingCalcQty = ing.base_quantity ? ing.base_quantity * scaleFactor : null
@@ -53,7 +54,7 @@ function StepContent({ step, scaleFactor, timer, consecutiveIngredients = [] }) 
               <div className="w-full flex items-center gap-6 justify-center">
                 <TimerDisplay remaining={timer.remaining} total={timer.total} inline />
                 {step.instructions && (
-                  <div className="flex-1 text-right">
+                  <div className="flex-1 text-start">
                     <p className="text-base text-foreground whitespace-pre-wrap leading-relaxed">{step.instructions}</p>
                   </div>
                 )}
@@ -249,8 +250,8 @@ export default function ProductionRunner() {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4 text-center px-6">
         <div className="w-8 h-8 border-4 border-border border-t-primary rounded-full animate-spin" />
-        <p className="text-muted-foreground text-sm">הייצור הזה נסגר או שאינו קיים</p>
-        <Button onClick={() => navigate('/production')}>חזרה לייצור מודרך</Button>
+        <p className="text-muted-foreground text-sm">{t('הייצור הזה נסגר או שאינו קיים')}</p>
+        <Button onClick={() => navigate('/production')}>{t('חזרה לייצור מודרך')}</Button>
       </div>
     )
   }
@@ -258,8 +259,8 @@ export default function ProductionRunner() {
   if (visibleSteps.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4">
-        <p className="text-muted-foreground">אין שלבים במתכון זה</p>
-        <Button onClick={() => completeMutation.mutate()}>סיים ייצור</Button>
+        <p className="text-muted-foreground">{t('אין שלבים במתכון זה')}</p>
+        <Button onClick={() => completeMutation.mutate()}>{t('סיים ייצור')}</Button>
       </div>
     )
   }
@@ -270,7 +271,7 @@ export default function ProductionRunner() {
     <div className="h-full bg-background flex flex-col overflow-y-auto">
       <div className="sticky top-0 bg-card border-b border-border px-4 py-3 flex items-center gap-2 z-10 shadow-soft">
         <Button variant="ghost" size="icon" onClick={() => navigate('/production')} className="flex-shrink-0">
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="dir-icon w-5 h-5" />
         </Button>
         <div className="flex-1 min-w-0">
           {allActiveSessions.length > 1 && (
@@ -289,13 +290,13 @@ export default function ProductionRunner() {
           <h1 className="font-bold text-sm truncate">{session.recipe_name}</h1>
           {isCyclesMode && session.total_vats > 1 && (
             <p className="text-xs text-muted-foreground">
-              אצווה {session.vat_number}/{session.total_vats}
+              {t('אצווה {n}/{total}', { n: session.vat_number, total: session.total_vats })}
             </p>
           )}
         </div>
         <AllStepsDrawer steps={visibleSteps} currentIndex={currentIndex} scaleFactor={scaleFactor} onSelectStep={(idx) => navigateMutation.mutate(idx)} />
         <AllIngredientsDrawer steps={visibleSteps} scaleFactor={scaleFactor} />
-        <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => setPrinting(true)} title="הדפס">
+        <Button variant="ghost" size="icon" className="flex-shrink-0" onClick={() => setPrinting(true)} title={t('הדפס')}>
           <Printer className="w-5 h-5" />
         </Button>
         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive flex-shrink-0" onClick={() => setShowCancel(true)}>
@@ -309,7 +310,7 @@ export default function ProductionRunner() {
       {allVatsMarkedDone && (
         <div className="bg-success/10 border-b border-success/30 px-4 py-2 flex items-center justify-center gap-2">
           <CheckCircle className="w-4 h-4 text-success flex-shrink-0" />
-          <p className="text-sm text-success font-semibold">כל האצוות הושלמו — בצע את הפעולה האחרונה וסיים ייצור</p>
+          <p className="text-sm text-success font-semibold">{t('כל האצוות הושלמו — בצע את הפעולה האחרונה וסיים ייצור')}</p>
         </div>
       )}
       <div className="h-1.5 bg-muted">
@@ -317,7 +318,7 @@ export default function ProductionRunner() {
       </div>
       <div className="px-4 pt-3 text-center">
         <span className="text-xs text-muted-foreground bg-secondary px-3 py-1 rounded-full">
-          שלב {currentIndex + 1} מתוך {visibleSteps.length}
+          {t('שלב {n} מתוך {total}', { n: currentIndex + 1, total: visibleSteps.length })}
         </span>
       </div>
       {recipe?.parameter_ids?.length > 0 && (
@@ -330,25 +331,25 @@ export default function ProductionRunner() {
       <div className="sticky bottom-0 bg-card border-t border-border p-4 mt-auto">
         <div className="flex gap-3 max-w-lg mx-auto">
           <Button variant="outline" className="flex-1 h-14 text-base" onClick={handlePrev} disabled={currentIndex === 0}>
-            <ChevronRight className="w-5 h-5 ml-1" />
-            קודם
+            <ChevronRight className="dir-icon w-5 h-5 me-1" />
+            {t('קודם')}
           </Button>
           {isLastStep ? (
             isCyclesMode && !isLastVat ? (
               <Button className="flex-1 h-14 text-base bg-blue-600 hover:bg-blue-700 text-white gap-2" onClick={() => advanceCycleMutation.mutate()} disabled={advanceCycleMutation.isPending}>
                 <RefreshCw className="w-5 h-5" />
-                סיים אצווה {session.vat_number}
+                {t('סיים אצווה {n}', { n: session.vat_number })}
               </Button>
             ) : (
               <Button className="flex-1 h-14 text-base bg-success hover:bg-success/90 text-success-foreground gap-2" onClick={() => completeMutation.mutate()} disabled={completeMutation.isPending}>
                 <CheckCircle className="w-5 h-5" />
-                {isCyclesMode ? `סיום ייצור (אצווה ${session.vat_number})` : 'סיים ייצור'}
+                {isCyclesMode ? t('סיום ייצור (אצווה {n})', { n: session.vat_number }) : t('סיים ייצור')}
               </Button>
             )
           ) : (
             <Button className="flex-1 h-14 text-base gap-2" onClick={handleNext} disabled={navigateMutation.isPending}>
-              הבא
-              <ChevronLeft className="w-5 h-5" />
+              {t('הבא')}
+              <ChevronLeft className="dir-icon w-5 h-5" />
             </Button>
           )}
         </div>
@@ -357,13 +358,13 @@ export default function ProductionRunner() {
       <AlertDialog open={showCancel} onOpenChange={setShowCancel}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>עצירת ייצור</AlertDialogTitle>
-            <AlertDialogDescription>האם אתה בטוח שברצונך לעצור את הייצור? הייצור יימחק ולא ניתן לשחזרו.</AlertDialogDescription>
+            <AlertDialogTitle>{t('עצירת ייצור')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('האם אתה בטוח שברצונך לעצור את הייצור? הייצור יימחק ולא ניתן לשחזרו.')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>המשך ייצור</AlertDialogCancel>
+            <AlertDialogCancel>{t('המשך ייצור')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => cancelMutation.mutate()} className="bg-destructive hover:bg-destructive/90">
-              עצור ייצור
+              {t('עצור ייצור')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,21 +1,22 @@
+import { t } from '@/lib/i18n'
 // Friendly Hebrew label for a route, used so a feedback note shows *what*
 // page it was left on in human terms, not just the raw path.
 const PATTERNS = [
-  [/^\/recipes\/new/, 'מתכון חדש'],
-  [/^\/recipes\/quick/, 'מתכון חדש (אשף)'],
-  [/^\/recipes\/[^/]+\/edit/, 'עריכת מתכון'],
-  [/^\/recipes\/[^/]+/, 'צפייה במתכון'],
-  [/^\/recipes/, 'מתכונים'],
-  [/^\/production\/[^/]+/, 'מעקב ייצור'],
-  [/^\/production/, 'ייצור מודרך'],
-  [/^\/settings\/recipe-categories/, 'קטגוריות מתכונים'],
-  [/^\/parameters/, 'פרמטרים'],
-  [/^\/units/, 'יחידות מידה'],
-  [/^\/alert-sound/, 'התראות'],
-  [/^\/settings\/edit-code/, 'קוד עריכה'],
-  [/^\/settings\/feedback/, 'הערות ומשוב'],
-  [/^\/print\/recipe/, 'הדפסת מתכון'],
-  [/^\/print\/recipes/, 'הדפסת ספר מתכונים'],
+  [/^\/recipes\/new/, t('מתכון חדש')],
+  [/^\/recipes\/quick/, t('מתכון חדש (אשף)')],
+  [/^\/recipes\/[^/]+\/edit/, t('עריכת מתכון')],
+  [/^\/recipes\/[^/]+/, t('צפייה במתכון')],
+  [/^\/recipes/, t('מתכונים')],
+  [/^\/production\/[^/]+/, t('מעקב ייצור')],
+  [/^\/production/, t('ייצור מודרך')],
+  [/^\/settings\/recipe-categories/, t('קטגוריות מתכונים')],
+  [/^\/parameters/, t('פרמטרים')],
+  [/^\/units/, t('יחידות מידה')],
+  [/^\/alert-sound/, t('התראות')],
+  [/^\/settings\/edit-code/, t('קוד עריכה')],
+  [/^\/settings\/feedback/, t('הערות ומשוב')],
+  [/^\/print\/recipe/, t('הדפסת מתכון')],
+  [/^\/print\/recipes/, t('הדפסת ספר מתכונים')],
 ]
 
 export function getPageLabel(pathname) {

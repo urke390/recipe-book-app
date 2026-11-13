@@ -25,11 +25,12 @@ import ParamValueEditor from '@/components/recipe/ParamValueEditor'
 import PrintRecipe from '@/pages/print/PrintRecipe'
 import { getStepDisplayTitle, STEP_TYPE_COLORS, STEP_TYPE_LABELS } from '@/lib/stepUtils'
 import Qty from '@/components/Qty'
+import { t } from '@/lib/i18n'
 
 const TABS = [
-  { key: 'details', label: 'פרטים' },
-  { key: 'steps', label: 'שלבים' },
-  { key: 'parameters', label: 'פרמטרים' },
+  { key: 'details', label: t('פרטים') },
+  { key: 'steps', label: t('שלבים') },
+  { key: 'parameters', label: t('פרמטרים') },
 ]
 
 // Full-page recipe editor, reached via /recipes/new (create) or
@@ -90,7 +91,7 @@ export default function RecipeEditor() {
     },
     onSuccess: (saved) => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
-      toast({ title: 'המתכון נשמר' })
+      toast({ title: t('המתכון נשמר') })
       if (isNew) {
         navigate(`/recipes/${saved.id}/edit`, { replace: true })
       } else {
@@ -175,37 +176,37 @@ export default function RecipeEditor() {
     <div className="p-4 md:p-8 max-w-3xl mx-auto w-full">
       <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-3 bg-background/95 backdrop-blur-sm flex items-center gap-3 mb-6">
         <Button variant="ghost" size="icon" onClick={handleBack}>
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="dir-icon w-5 h-5" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-xl md:text-2xl font-heading font-bold">{isNew ? 'מתכון חדש' : recipe?.name || 'עריכת מתכון'}</h1>
+          <h1 className="text-xl md:text-2xl font-heading font-bold">{isNew ? t('מתכון חדש') : recipe?.name || t('עריכת מתכון')}</h1>
         </div>
         {!isNew && (
           <Button variant="outline" size="sm" className="gap-1.5 flex-shrink-0" onClick={() => setPrinting(true)}>
             <Printer className="w-3.5 h-3.5" />
-            הדפס
+            {t('הדפס')}
           </Button>
         )}
         {!editor && (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full flex-shrink-0">
             <Lock className="w-3 h-3" />
-            צפייה בלבד
+            {t('צפייה בלבד')}
           </span>
         )}
       </div>
 
       <div className="flex gap-1 bg-muted rounded-lg p-1 mb-6 max-w-md">
-        {TABS.map((t) => (
+        {TABS.map((tabItem) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            disabled={t.key !== 'details' && isNew}
+            key={tabItem.key}
+            onClick={() => setTab(tabItem.key)}
+            disabled={tabItem.key !== 'details' && isNew}
             className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
-              tab === t.key ? 'bg-card text-foreground shadow-soft' : 'text-muted-foreground hover:text-foreground'
+              tab === tabItem.key ? 'bg-card text-foreground shadow-soft' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            {t.label}
-            {t.key === 'steps' && steps.length > 0 && <span className="mr-1.5 text-xs text-muted-foreground">({steps.length})</span>}
+            {tabItem.label}
+            {tabItem.key === 'steps' && steps.length > 0 && <span className="ms-1.5 text-xs text-muted-foreground">({steps.length})</span>}
           </button>
         ))}
       </div>
@@ -213,17 +214,17 @@ export default function RecipeEditor() {
       {tab === 'details' && (
         <div className="space-y-4 bg-card border border-border rounded-2xl p-5 shadow-soft">
           <div>
-            <Label className="mb-1 block">שם מתכון *</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="לדוגמה: עוגת שוקולד" disabled={!editor} />
+            <Label className="mb-1 block">{t('שם מתכון *')}</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('לדוגמה: עוגת שוקולד')} disabled={!editor} />
           </div>
           <div>
-            <Label className="mb-1 block">קטגוריה</Label>
+            <Label className="mb-1 block">{t('קטגוריה')}</Label>
             <Select value={categoryId || 'none'} onValueChange={(v) => setCategoryId(v === 'none' ? null : v)} disabled={!editor}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">ללא קטגוריה</SelectItem>
+                <SelectItem value="none">{t('ללא קטגוריה')}</SelectItem>
                 {recipeCategories.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -234,7 +235,7 @@ export default function RecipeEditor() {
           </div>
           {editor && (
             <Button onClick={() => saveDetailsMutation.mutate()} disabled={!name || saveDetailsMutation.isPending} className="w-full">
-              {saveDetailsMutation.isPending ? 'שומר...' : isNew ? 'צור מתכון והמשך לשלבים' : 'שמור פרטים'}
+              {saveDetailsMutation.isPending ? t('שומר...') : isNew ? t('צור מתכון והמשך לשלבים') : t('שמור פרטים')}
             </Button>
           )}
         </div>
@@ -293,7 +294,7 @@ export default function RecipeEditor() {
             </Droppable>
           </DragDropContext>
 
-          {displaySteps.length === 0 && !addingStep && <p className="text-center text-muted-foreground py-10 text-sm">אין שלבים עדיין</p>}
+          {displaySteps.length === 0 && !addingStep && <p className="text-center text-muted-foreground py-10 text-sm">{t('אין שלבים עדיין')}</p>}
 
           {addingStep ? (
             <StepRowEditor recipeId={id} onSave={(data) => addStepMutation.mutate(data)} onClose={() => setAddingStep(false)} />
@@ -301,7 +302,7 @@ export default function RecipeEditor() {
             editor && (
               <Button variant="outline" className="w-full gap-2 border-dashed" onClick={() => setAddingStep(true)}>
                 <Plus className="w-4 h-4" />
-                הוסף שלב
+                {t('הוסף שלב')}
               </Button>
             )
           )}
@@ -326,7 +327,7 @@ export default function RecipeEditor() {
                 </button>
               )
             })}
-            {allParameters.length === 0 && <p className="text-sm text-muted-foreground">אין פרמטרים מוגדרים במערכת</p>}
+            {allParameters.length === 0 && <p className="text-sm text-muted-foreground">{t('אין פרמטרים מוגדרים במערכת')}</p>}
           </div>
 
           {parameterValues.map((pv) => {
@@ -340,13 +341,13 @@ export default function RecipeEditor() {
       <AlertDialog open={!!deleteStepId} onOpenChange={() => setDeleteStepId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>מחיקת שלב</AlertDialogTitle>
-            <AlertDialogDescription>האם למחוק שלב זה?</AlertDialogDescription>
+            <AlertDialogTitle>{t('מחיקת שלב')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('האם למחוק שלב זה?')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>ביטול</AlertDialogCancel>
+            <AlertDialogCancel>{t('ביטול')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteStepMutation.mutate(deleteStepId)} className="bg-destructive hover:bg-destructive/90">
-              מחק
+              {t('מחק')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

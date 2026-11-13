@@ -11,20 +11,21 @@ import { useToast } from '@/components/ui/use-toast'
 import ParamValueEditor from '@/components/recipe/ParamValueEditor'
 import { getStepDisplayTitle, STEP_TYPE_COLORS, STEP_TYPE_LABELS } from '@/lib/stepUtils'
 import Qty from '@/components/Qty'
+import { t } from '@/lib/i18n'
 
 const DRAFT_KEY = 'quick_recipe_draft'
 
 const STEP_CHOICES = [
-  { type: 'ingredient_addition', emoji: '🧂', label: 'מוסיפים רכיב', hint: 'חלב, תרבית, מלח...' },
-  { type: 'wait_time', emoji: '⏱️', label: 'מחכים', hint: 'המתנה, התססה, קירור...' },
-  { type: 'action', emoji: '👐', label: 'עושים פעולה', hint: 'לערבב, לחמם, לחתוך...' },
-  { type: 'section_header', emoji: '📌', label: 'מתחילים חלק חדש', hint: 'כותרת, למשל "לציפוי"' },
+  { type: 'ingredient_addition', emoji: '🧂', label: t('מוסיפים רכיב'), hint: t('חלב, תרבית, מלח...') },
+  { type: 'wait_time', emoji: '⏱️', label: t('מחכים'), hint: t('המתנה, התססה, קירור...') },
+  { type: 'action', emoji: '👐', label: t('עושים פעולה'), hint: t('לערבב, לחמם, לחתוך...') },
+  { type: 'section_header', emoji: '📌', label: t('מתחילים חלק חדש'), hint: t('כותרת, למשל "לציפוי"') },
 ]
 
 const TIME_UNITS = [
-  { value: 'minutes', label: 'דקות', multiplier: 1 },
-  { value: 'hours', label: 'שעות', multiplier: 60 },
-  { value: 'days', label: 'ימים', multiplier: 1440 },
+  { value: 'minutes', label: t('דקות'), multiplier: 1 },
+  { value: 'hours', label: t('שעות'), multiplier: 60 },
+  { value: 'days', label: t('ימים'), multiplier: 1440 },
 ]
 
 // Screens of the wizard, in order. 'steps' is a loop - the user keeps
@@ -83,12 +84,12 @@ function StepLine({ step, index, onDelete, onEdit }) {
         </span>
       )}
       {onEdit && (
-        <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" onClick={onEdit} title="ערוך">
+        <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" onClick={onEdit} title={t('ערוך')}>
           <Pencil className="w-3.5 h-3.5" />
         </Button>
       )}
       {onDelete && (
-        <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0 text-destructive hover:text-destructive" onClick={onDelete} title="מחק">
+        <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0 text-destructive hover:text-destructive" onClick={onDelete} title={t('מחק')}>
           <Trash2 className="w-3.5 h-3.5" />
         </Button>
       )}
@@ -159,19 +160,19 @@ function StepQuestions({ type, initial, units, onDone, onCancel }) {
       {type === 'ingredient_addition' && (
         <>
           <div>
-            <label className="block text-sm font-medium mb-1.5">איזה רכיב מוסיפים?</label>
-            <Input ref={firstInput} value={ingredientName} onChange={(e) => setIngredientName(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: חלב" className="h-11 text-base" />
+            <label className="block text-sm font-medium mb-1.5">{t('איזה רכיב מוסיפים?')}</label>
+            <Input ref={firstInput} value={ingredientName} onChange={(e) => setIngredientName(e.target.value)} onKeyDown={onKeyDown} placeholder={t('לדוגמה: חלב')} className="h-11 text-base" />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1.5">כמה? (אפשר להשאיר ריק)</label>
-            <Input type="number" inputMode="decimal" value={quantity} onChange={(e) => setQuantity(e.target.value)} onKeyDown={onKeyDown} placeholder="כמות" className="h-11 text-base w-32" dir="ltr" />
+            <label className="block text-sm font-medium mb-1.5">{t('כמה? (אפשר להשאיר ריק)')}</label>
+            <Input type="number" inputMode="decimal" value={quantity} onChange={(e) => setQuantity(e.target.value)} onKeyDown={onKeyDown} placeholder={t('כמות')} className="h-11 text-base w-32" dir="ltr" />
           </div>
           {units.length > 0 && (
             <div>
-              <label className="block text-sm font-medium mb-1.5">באיזו יחידה?</label>
+              <label className="block text-sm font-medium mb-1.5">{t('באיזו יחידה?')}</label>
               <div className="flex flex-wrap gap-2">
                 <ChoiceChip active={!unit} onClick={() => setUnit('')}>
-                  ללא
+                  {t('ללא')}
                 </ChoiceChip>
                 {units.map((u) => (
                   <ChoiceChip key={u.id} active={unit === u.name} onClick={() => setUnit(u.name)}>
@@ -187,9 +188,9 @@ function StepQuestions({ type, initial, units, onDone, onCancel }) {
       {type === 'wait_time' && (
         <>
           <div>
-            <label className="block text-sm font-medium mb-1.5">כמה זמן מחכים?</label>
+            <label className="block text-sm font-medium mb-1.5">{t('כמה זמן מחכים?')}</label>
             <div className="flex flex-wrap items-center gap-2">
-              <Input ref={firstInput} type="number" inputMode="decimal" value={durationValue} onChange={(e) => setDurationValue(e.target.value)} onKeyDown={onKeyDown} placeholder="משך" className="h-11 text-base w-28" dir="ltr" />
+              <Input ref={firstInput} type="number" inputMode="decimal" value={durationValue} onChange={(e) => setDurationValue(e.target.value)} onKeyDown={onKeyDown} placeholder={t('משך')} className="h-11 text-base w-28" dir="ltr" />
               {TIME_UNITS.map((u) => (
                 <ChoiceChip key={u.value} active={durationUnit === u.value} onClick={() => setDurationUnit(u.value)}>
                   {u.label}
@@ -198,40 +199,40 @@ function StepQuestions({ type, initial, units, onDone, onCancel }) {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1.5">בשביל מה מחכים? (אפשר להשאיר ריק)</label>
-            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: התססה" className="min-h-[2.75rem] py-2.5 md:text-base" />
+            <label className="block text-sm font-medium mb-1.5">{t('בשביל מה מחכים? (אפשר להשאיר ריק)')}</label>
+            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder={t('לדוגמה: התססה')} className="min-h-[2.75rem] py-2.5 md:text-base" />
           </div>
         </>
       )}
 
       {type === 'action' && (
         <div>
-          <label className="block text-sm font-medium mb-1.5">מה עושים?</label>
-          <AutoTextarea ref={firstInput} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לערבב היטב" className="min-h-[2.75rem] py-2.5 md:text-base" />
+          <label className="block text-sm font-medium mb-1.5">{t('מה עושים?')}</label>
+          <AutoTextarea ref={firstInput} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder={t('לדוגמה: לערבב היטב')} className="min-h-[2.75rem] py-2.5 md:text-base" />
         </div>
       )}
 
       {type === 'section_header' && (
         <div>
-          <label className="block text-sm font-medium mb-1.5">איך קוראים לחלק הזה?</label>
-          <AutoTextarea ref={firstInput} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לציפוי" className="min-h-[2.75rem] py-2.5 md:text-base" />
+          <label className="block text-sm font-medium mb-1.5">{t('איך קוראים לחלק הזה?')}</label>
+          <AutoTextarea ref={firstInput} value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onKeyDown} placeholder={t('לדוגמה: לציפוי')} className="min-h-[2.75rem] py-2.5 md:text-base" />
         </div>
       )}
 
       {type !== 'section_header' && (
         <div>
-          <label className="block text-sm font-medium mb-1.5">יש הוראות נוספות? (אפשר להשאיר ריק)</label>
-          <AutoTextarea value={instructions} onChange={(e) => setInstructions(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: לאט, בלי להקציף" className="min-h-[2.75rem] py-2.5 md:text-base" />
+          <label className="block text-sm font-medium mb-1.5">{t('יש הוראות נוספות? (אפשר להשאיר ריק)')}</label>
+          <AutoTextarea value={instructions} onChange={(e) => setInstructions(e.target.value)} onKeyDown={onKeyDown} placeholder={t('לדוגמה: לאט, בלי להקציף')} className="min-h-[2.75rem] py-2.5 md:text-base" />
         </div>
       )}
 
       <div className="flex gap-2 pt-1">
         <Button onClick={submit} disabled={!valid} className="flex-1 h-11 gap-2">
           <Check className="w-4 h-4" />
-          {initial ? 'עדכן שלב' : 'הוסף שלב'}
+          {initial ? t('עדכן שלב') : t('הוסף שלב')}
         </Button>
         <Button variant="outline" onClick={onCancel} className="h-11">
-          ביטול
+          {t('ביטול')}
         </Button>
       </div>
     </div>
@@ -252,29 +253,29 @@ function NewParameterForm({ onCreated, onCancel }) {
       queryClient.invalidateQueries({ queryKey: ['parameters'] })
       onCreated(param)
     },
-    onError: (e) => toast({ title: 'יצירת הפרמטר נכשלה', description: e?.message, variant: 'destructive' }),
+    onError: (e) => toast({ title: t('יצירת הפרמטר נכשלה'), description: e?.message, variant: 'destructive' }),
   })
   const submit = () => name.trim() && !createMutation.isPending && createMutation.mutate()
   const onKeyDown = (e) => e.key === 'Enter' && submit()
 
   return (
     <div className="space-y-3 bg-card border border-border rounded-2xl p-5 shadow-soft">
-      <p className="font-semibold">פרמטר חדש</p>
+      <p className="font-semibold">{t('פרמטר חדש')}</p>
       <div>
-        <label className="block text-sm font-medium mb-1.5">מה בודקים?</label>
-        <Input autoFocus value={name} onChange={(e) => setName(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: טמפרטורת חלב" className="h-11 text-base" />
+        <label className="block text-sm font-medium mb-1.5">{t('מה בודקים?')}</label>
+        <Input autoFocus value={name} onChange={(e) => setName(e.target.value)} onKeyDown={onKeyDown} placeholder={t('לדוגמה: טמפרטורת חלב')} className="h-11 text-base" />
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1.5">באיזו יחידה? (אפשר להשאיר ריק)</label>
-        <Input value={unit} onChange={(e) => setUnit(e.target.value)} onKeyDown={onKeyDown} placeholder="לדוגמה: °C" className="h-11 text-base w-40" />
+        <label className="block text-sm font-medium mb-1.5">{t('באיזו יחידה? (אפשר להשאיר ריק)')}</label>
+        <Input value={unit} onChange={(e) => setUnit(e.target.value)} onKeyDown={onKeyDown} placeholder={t('לדוגמה: °C')} className="h-11 text-base w-40" />
       </div>
       <div className="flex gap-2 pt-1">
         <Button onClick={submit} disabled={!name.trim() || createMutation.isPending} className="flex-1 h-11 gap-2">
           <Check className="w-4 h-4" />
-          {createMutation.isPending ? 'יוצר...' : 'צור והוסף למתכון'}
+          {createMutation.isPending ? t('יוצר...') : t('צור והוסף למתכון')}
         </Button>
         <Button variant="outline" onClick={onCancel} className="h-11">
-          ביטול
+          {t('ביטול')}
         </Button>
       </div>
     </div>
@@ -369,10 +370,10 @@ export default function QuickRecipe() {
         // ignore
       }
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
-      toast({ title: 'המתכון נשמר' })
+      toast({ title: t('המתכון נשמר') })
       navigate(`/recipes/${recipe.id}`, { replace: true })
     },
-    onError: (e) => toast({ title: 'השמירה נכשלה', description: e?.message, variant: 'destructive' }),
+    onError: (e) => toast({ title: t('השמירה נכשלה'), description: e?.message, variant: 'destructive' }),
   })
 
   const startOver = () => {
@@ -394,10 +395,10 @@ export default function QuickRecipe() {
       <div className="p-4 md:p-8 max-w-xl mx-auto w-full">
         <div className="text-center py-16 bg-card border border-border rounded-2xl shadow-soft px-6">
           <Lock className="w-10 h-10 text-muted-foreground mx-auto mb-4 opacity-60" />
-          <p className="font-semibold text-lg">צריך קוד עריכה</p>
-          <p className="text-sm text-muted-foreground mt-2">כדי להוסיף מתכון צריך להזין קוד עריכה. אפשר לבקש אותו מהאחראי.</p>
+          <p className="font-semibold text-lg">{t('צריך קוד עריכה')}</p>
+          <p className="text-sm text-muted-foreground mt-2">{t('כדי להוסיף מתכון צריך להזין קוד עריכה. אפשר לבקש אותו מהאחראי.')}</p>
           <Button variant="outline" className="mt-6" onClick={() => navigate('/recipes')}>
-            חזרה למתכונים
+            {t('חזרה למתכונים')}
           </Button>
         </div>
       </div>
@@ -410,13 +411,13 @@ export default function QuickRecipe() {
   return (
     <div className="p-4 md:p-8 max-w-xl mx-auto w-full">
       <div className="flex items-center gap-3 mb-4">
-        <Button variant="ghost" size="icon" onClick={back} title="חזרה">
-          <ChevronRight className="w-5 h-5" />
+        <Button variant="ghost" size="icon" onClick={back} title={t('חזרה')}>
+          <ChevronRight className="dir-icon w-5 h-5" />
         </Button>
-        <h1 className="flex-1 text-lg font-heading font-bold">מתכון חדש</h1>
+        <h1 className="flex-1 text-lg font-heading font-bold">{t('מתכון חדש')}</h1>
         {hasProgress && (
           <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={startOver}>
-            התחל מחדש
+            {t('התחל מחדש')}
           </Button>
         )}
       </div>
@@ -426,27 +427,27 @@ export default function QuickRecipe() {
       </div>
 
       {screen === 'name' && (
-        <Question title="איך קוראים למתכון?">
+        <Question title={t('איך קוראים למתכון?')}>
           <Input
             ref={nameInput}
             value={name}
             onChange={(e) => update({ name: e.target.value })}
             onKeyDown={(e) => e.key === 'Enter' && name.trim() && next()}
-            placeholder="לדוגמה: גבינה לבנה 5%"
+            placeholder={t('לדוגמה: גבינה לבנה 5%')}
             className="h-12 text-lg"
           />
           <Button onClick={next} disabled={!name.trim()} className="w-full h-12 gap-2 text-base">
-            המשך
-            <ChevronLeft className="w-4 h-4" />
+            {t('המשך')}
+            <ChevronLeft className="dir-icon w-4 h-4" />
           </Button>
         </Question>
       )}
 
       {screen === 'category' && (
-        <Question title="לאיזו קטגוריה הוא שייך?">
+        <Question title={t('לאיזו קטגוריה הוא שייך?')}>
           <div className="flex flex-wrap gap-2">
             <ChoiceChip active={!categoryId} onClick={() => update({ categoryId: null })}>
-              ללא קטגוריה
+              {t('ללא קטגוריה')}
             </ChoiceChip>
             {categories.map((c) => (
               <ChoiceChip key={c.id} active={categoryId === c.id} onClick={() => update({ categoryId: c.id })}>
@@ -455,16 +456,16 @@ export default function QuickRecipe() {
             ))}
           </div>
           <Button onClick={next} className="w-full h-12 gap-2 text-base">
-            המשך
-            <ChevronLeft className="w-4 h-4" />
+            {t('המשך')}
+            <ChevronLeft className="dir-icon w-4 h-4" />
           </Button>
         </Question>
       )}
 
       {screen === 'steps' && (
         <Question
-          title={steps.length === 0 ? 'מה עושים ראשון?' : 'מה עושים אחר כך?'}
-          subtitle={steps.length === 0 ? 'בונים את המתכון שלב אחרי שלב, לפי הסדר' : `${steps.length} שלבים עד עכשיו`}
+          title={steps.length === 0 ? t('מה עושים ראשון?') : t('מה עושים אחר כך?')}
+          subtitle={steps.length === 0 ? t('בונים את המתכון שלב אחרי שלב, לפי הסדר') : t('{n} שלבים עד עכשיו', { n: steps.length })}
         >
           {steps.length > 0 && (
             <div className="space-y-1.5">
@@ -508,7 +509,7 @@ export default function QuickRecipe() {
                 </div>
                 <Button onClick={next} disabled={steps.length === 0} className="w-full h-12 gap-2 text-base">
                   <Check className="w-4 h-4" />
-                  סיימתי את השלבים
+                  {t('סיימתי את השלבים')}
                 </Button>
               </>
             ))}
@@ -516,11 +517,11 @@ export default function QuickRecipe() {
       )}
 
       {screen === 'parameters' && (
-        <Question title="יש ערכים שצריך לבדוק במהלך הייצור?" subtitle="למשל טמפרטורה או חומציות. לא חובה - אפשר לדלג">
+        <Question title={t('יש ערכים שצריך לבדוק במהלך הייצור?')} subtitle={t('למשל טמפרטורה או חומציות. לא חובה - אפשר לדלג')}>
           <div className="flex flex-wrap gap-2">
             {allParameters.map((p) => (
               <ChoiceChip key={p.id} active={parameterValues.some((pv) => pv.parameter_id === p.id)} onClick={() => toggleParameter(p.id)}>
-                {parameterValues.some((pv) => pv.parameter_id === p.id) ? <Check className="w-3.5 h-3.5 inline ml-1" /> : <Plus className="w-3.5 h-3.5 inline ml-1" />}
+                {parameterValues.some((pv) => pv.parameter_id === p.id) ? <Check className="w-3.5 h-3.5 inline me-1" /> : <Plus className="w-3.5 h-3.5 inline me-1" />}
                 {p.name}
               </ChoiceChip>
             ))}
@@ -530,8 +531,8 @@ export default function QuickRecipe() {
                 onClick={() => setAddingParameter(true)}
                 className="px-4 py-2.5 rounded-xl border border-dashed border-primary/60 text-primary text-sm font-medium hover:bg-primary/5 transition-colors"
               >
-                <Plus className="w-3.5 h-3.5 inline ml-1" />
-                פרמטר חדש
+                <Plus className="w-3.5 h-3.5 inline me-1" />
+                {t('פרמטר חדש')}
               </button>
             )}
           </div>
@@ -550,26 +551,26 @@ export default function QuickRecipe() {
             return <ParamValueEditor key={pv.parameter_id} param={param} pv={pv} onUpdate={(field, value) => updateParamValue(pv.parameter_id, field, value)} />
           })}
           <Button onClick={next} className="w-full h-12 gap-2 text-base">
-            {parameterValues.length ? 'המשך' : 'דלג'}
-            <ChevronLeft className="w-4 h-4" />
+            {parameterValues.length ? t('המשך') : t('דלג')}
+            <ChevronLeft className="dir-icon w-4 h-4" />
           </Button>
         </Question>
       )}
 
       {screen === 'summary' && (
-        <Question title="הכל נכון?" subtitle="אפשר ללחוץ על כל חלק כדי לתקן אותו">
+        <Question title={t('הכל נכון?')} subtitle={t('אפשר ללחוץ על כל חלק כדי לתקן אותו')}>
           <div className="bg-card border border-border rounded-2xl p-5 shadow-soft space-y-4">
-            <button type="button" onClick={() => goTo('name')} className="block w-full text-right">
-              <p className="text-xs text-muted-foreground">שם</p>
+            <button type="button" onClick={() => goTo('name')} className="block w-full text-start">
+              <p className="text-xs text-muted-foreground">{t('שם')}</p>
               <p className="font-bold text-lg">{name}</p>
             </button>
-            <button type="button" onClick={() => goTo('category')} className="block text-right">
-              <p className="text-xs text-muted-foreground">קטגוריה</p>
-              <p className="text-sm font-medium">{categoryName || 'ללא'}</p>
+            <button type="button" onClick={() => goTo('category')} className="block text-start">
+              <p className="text-xs text-muted-foreground">{t('קטגוריה')}</p>
+              <p className="text-sm font-medium">{categoryName || t('ללא')}</p>
             </button>
             <div>
               <button type="button" onClick={() => goTo('steps')} className="text-xs text-muted-foreground mb-1.5">
-                שלבים ({steps.length}) · לחץ לעריכה
+                {t('שלבים ({n}) · לחץ לעריכה', { n: steps.length })}
               </button>
               <div className="space-y-1.5">
                 {steps.map((s, i) => (
@@ -577,16 +578,16 @@ export default function QuickRecipe() {
                 ))}
               </div>
             </div>
-            <button type="button" onClick={() => goTo('parameters')} className="block w-full text-right">
-              <p className="text-xs text-muted-foreground">פרמטרים</p>
+            <button type="button" onClick={() => goTo('parameters')} className="block w-full text-start">
+              <p className="text-xs text-muted-foreground">{t('פרמטרים')}</p>
               <p className="text-sm font-medium">
-                {parameterValues.length ? parameterValues.map((pv) => allParameters.find((p) => p.id === pv.parameter_id)?.name).filter(Boolean).join(', ') : 'ללא'}
+                {parameterValues.length ? parameterValues.map((pv) => allParameters.find((p) => p.id === pv.parameter_id)?.name).filter(Boolean).join(', ') : t('ללא')}
               </p>
             </button>
           </div>
           <Button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending || !name.trim() || steps.length === 0} className="w-full h-12 gap-2 text-base">
             <Check className="w-4 h-4" />
-            {saveMutation.isPending ? 'שומר...' : 'שמור מתכון'}
+            {saveMutation.isPending ? t('שומר...') : t('שמור מתכון')}
           </Button>
         </Question>
       )}

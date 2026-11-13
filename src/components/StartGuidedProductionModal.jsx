@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button'
 import { Minus, Plus, Rocket } from 'lucide-react'
 import { stepTimerFields } from '@/hooks/useServerTimer'
+import { t } from '@/lib/i18n'
 
 // recipe: { id, name } - always a concrete recipe, reached only from
 // RecipeView's "התחל ייצור מודרך" button. onClose(session) is called with
@@ -53,7 +54,7 @@ export default function StartGuidedProductionModal({ recipe, onClose }) {
     <Dialog open onOpenChange={() => onClose()}>
       <DialogContent className="max-w-sm p-6">
         <DialogHeader>
-          <DialogTitle className="text-center text-lg">כמה פעמים להכין?</DialogTitle>
+          <DialogTitle className="text-center text-lg">{t('כמה פעמים להכין?')}</DialogTitle>
         </DialogHeader>
 
         <p className="text-center text-sm text-muted-foreground -mt-2">{recipe.name}</p>
@@ -72,7 +73,7 @@ export default function StartGuidedProductionModal({ recipe, onClose }) {
               }}
               className="w-full text-center text-5xl font-bold bg-transparent border-none outline-none text-foreground tabular-nums"
             />
-            <p className="text-xs text-muted-foreground mt-1">{multiplier === 1 ? 'כמות המתכון כפי שנכתב' : `${multiplier}× כמות המתכון`}</p>
+            <p className="text-xs text-muted-foreground mt-1">{multiplier === 1 ? t('כמות המתכון כפי שנכתב') : t('{n}× כמות המתכון', { n: multiplier })}</p>
           </div>
           <button onClick={() => changeMultiplier(1)} className="w-11 h-11 rounded-full border-2 border-border flex items-center justify-center hover:border-primary hover:bg-primary/5 transition-all">
             <Plus className="w-5 h-5" />
@@ -81,7 +82,7 @@ export default function StartGuidedProductionModal({ recipe, onClose }) {
 
         <Button className="w-full h-12 text-base font-semibold mt-1 gap-2" onClick={() => createMutation.mutate()} disabled={createMutation.isPending}>
           <Rocket className="w-4 h-4" />
-          {createMutation.isPending ? 'שומר...' : 'התחל ייצור'}
+          {createMutation.isPending ? t('שומר...') : t('התחל ייצור')}
         </Button>
       </DialogContent>
     </Dialog>

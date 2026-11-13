@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { useToast } from '@/components/ui/use-toast'
+import { t } from '@/lib/i18n'
 
 function CategoryDialog({ category, onSave, onClose }) {
   const [name, setName] = useState(category?.name || '')
@@ -16,18 +17,18 @@ function CategoryDialog({ category, onSave, onClose }) {
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>{category ? 'עריכת קטגוריה' : 'קטגוריה חדשה'}</DialogTitle>
+          <DialogTitle>{category ? t('עריכת קטגוריה') : t('קטגוריה חדשה')}</DialogTitle>
         </DialogHeader>
         <div className="py-2">
-          <Label className="mb-1 block">שם קטגוריה *</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="לדוגמה: עוגות" autoFocus />
+          <Label className="mb-1 block">{t('שם קטגוריה *')}</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('לדוגמה: עוגות')} autoFocus />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            ביטול
+            {t('ביטול')}
           </Button>
           <Button onClick={() => onSave(name.trim())} disabled={!name.trim()}>
-            שמור
+            {t('שמור')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -52,7 +53,7 @@ export default function RecipeCategorySettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipe_categories'] })
       setDialog(null)
-      toast({ title: 'הקטגוריה נשמרה' })
+      toast({ title: t('הקטגוריה נשמרה') })
     },
   })
 
@@ -62,7 +63,7 @@ export default function RecipeCategorySettings() {
       queryClient.invalidateQueries({ queryKey: ['recipe_categories'] })
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
       setDeleteId(null)
-      toast({ title: 'הקטגוריה נמחקה' })
+      toast({ title: t('הקטגוריה נמחקה') })
     },
   })
 
@@ -72,19 +73,19 @@ export default function RecipeCategorySettings() {
         <div>
           <h1 className="text-2xl font-heading font-bold flex items-center gap-2">
             <Tag className="w-6 h-6 text-primary" />
-            קטגוריות מתכונים
+            {t('קטגוריות מתכונים')}
           </h1>
-          <p className="text-muted-foreground text-sm mt-0.5">הקטגוריות הזמינות לסינון מתכונים</p>
+          <p className="text-muted-foreground text-sm mt-0.5">{t('הקטגוריות הזמינות לסינון מתכונים')}</p>
         </div>
         {editor ? (
           <Button onClick={() => setDialog('new')} className="gap-2">
             <Plus className="w-4 h-4" />
-            קטגוריה חדשה
+            {t('קטגוריה חדשה')}
           </Button>
         ) : (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
             <Lock className="w-3 h-3" />
-            צפייה בלבד
+            {t('צפייה בלבד')}
           </span>
         )}
       </div>
@@ -96,11 +97,11 @@ export default function RecipeCategorySettings() {
       ) : categories.length === 0 ? (
         <div className="text-center py-20 bg-card border border-border rounded-2xl shadow-soft">
           <Tag className="w-14 h-14 text-muted-foreground mx-auto mb-4 opacity-40" />
-          <p className="text-muted-foreground font-medium">אין קטגוריות עדיין</p>
+          <p className="text-muted-foreground font-medium">{t('אין קטגוריות עדיין')}</p>
           {editor && (
             <Button variant="outline" className="mt-4 gap-2" onClick={() => setDialog('new')}>
               <Plus className="w-4 h-4" />
-              הוסף קטגוריה ראשונה
+              {t('הוסף קטגוריה ראשונה')}
             </Button>
           )}
         </div>
@@ -129,13 +130,13 @@ export default function RecipeCategorySettings() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>מחיקת קטגוריה</AlertDialogTitle>
-            <AlertDialogDescription>המתכונים בקטגוריה זו לא יימחקו, אך יישארו ללא קטגוריה.</AlertDialogDescription>
+            <AlertDialogTitle>{t('מחיקת קטגוריה')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('המתכונים בקטגוריה זו לא יימחקו, אך יישארו ללא קטגוריה.')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>ביטול</AlertDialogCancel>
+            <AlertDialogCancel>{t('ביטול')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-destructive hover:bg-destructive/90">
-              מחק
+              {t('מחק')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

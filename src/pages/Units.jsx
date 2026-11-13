@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { useToast } from '@/components/ui/use-toast'
+import { t } from '@/lib/i18n'
 
 function UnitDialog({ unit, onSave, onClose }) {
   const [name, setName] = useState(unit?.name || '')
@@ -16,18 +17,18 @@ function UnitDialog({ unit, onSave, onClose }) {
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>{unit ? 'עריכת יחידת מידה' : 'יחידת מידה חדשה'}</DialogTitle>
+          <DialogTitle>{unit ? t('עריכת יחידת מידה') : t('יחידת מידה חדשה')}</DialogTitle>
         </DialogHeader>
         <div className="py-2">
-          <Label className="mb-1 block">שם *</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="לדוגמה: כוס" autoFocus />
+          <Label className="mb-1 block">{t('שם *')}</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('לדוגמה: כוס')} autoFocus />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            ביטול
+            {t('ביטול')}
           </Button>
           <Button onClick={() => onSave(name.trim())} disabled={!name.trim()}>
-            שמור
+            {t('שמור')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -53,9 +54,9 @@ export default function Units() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['units'] })
       setDialog(null)
-      toast({ title: 'היחידה נשמרה' })
+      toast({ title: t('היחידה נשמרה') })
     },
-    onError: (err) => toast({ title: 'שגיאה בשמירה', description: err.message, variant: 'destructive' }),
+    onError: (err) => toast({ title: t('שגיאה בשמירה'), description: err.message, variant: 'destructive' }),
   })
 
   const deleteMutation = useMutation({
@@ -63,7 +64,7 @@ export default function Units() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['units'] })
       setDeleteId(null)
-      toast({ title: 'היחידה נמחקה' })
+      toast({ title: t('היחידה נמחקה') })
     },
   })
 
@@ -73,19 +74,19 @@ export default function Units() {
         <div>
           <h1 className="text-2xl font-heading font-bold flex items-center gap-2">
             <Ruler className="w-6 h-6 text-primary" />
-            יחידות מידה
+            {t('יחידות מידה')}
           </h1>
-          <p className="text-muted-foreground text-sm mt-0.5">היחידות הזמינות לבחירה ברכיבים ובשלבי מתכון</p>
+          <p className="text-muted-foreground text-sm mt-0.5">{t('היחידות הזמינות לבחירה ברכיבים ובשלבי מתכון')}</p>
         </div>
         {editor ? (
           <Button onClick={() => setDialog('new')} className="gap-2">
             <Plus className="w-4 h-4" />
-            יחידה חדשה
+            {t('יחידה חדשה')}
           </Button>
         ) : (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
             <Lock className="w-3 h-3" />
-            צפייה בלבד
+            {t('צפייה בלבד')}
           </span>
         )}
       </div>
@@ -97,11 +98,11 @@ export default function Units() {
       ) : units.length === 0 ? (
         <div className="text-center py-20 bg-card border border-border rounded-2xl shadow-soft">
           <Ruler className="w-14 h-14 text-muted-foreground mx-auto mb-4 opacity-40" />
-          <p className="text-muted-foreground font-medium">אין יחידות מידה עדיין</p>
+          <p className="text-muted-foreground font-medium">{t('אין יחידות מידה עדיין')}</p>
           {editor && (
             <Button variant="outline" className="mt-4 gap-2" onClick={() => setDialog('new')}>
               <Plus className="w-4 h-4" />
-              הוסף יחידה ראשונה
+              {t('הוסף יחידה ראשונה')}
             </Button>
           )}
         </div>
@@ -130,13 +131,13 @@ export default function Units() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>מחיקת יחידת מידה</AlertDialogTitle>
-            <AlertDialogDescription>מתכונים ורכיבים שכבר משתמשים ביחידה הזו ימשיכו להציג אותה כטקסט - רק לא תופיע יותר ברשימת הבחירה.</AlertDialogDescription>
+            <AlertDialogTitle>{t('מחיקת יחידת מידה')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('מתכונים ורכיבים שכבר משתמשים ביחידה הזו ימשיכו להציג אותה כטקסט - רק לא תופיע יותר ברשימת הבחירה.')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>ביטול</AlertDialogCancel>
+            <AlertDialogCancel>{t('ביטול')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-destructive hover:bg-destructive/90">
-              מחק
+              {t('מחק')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

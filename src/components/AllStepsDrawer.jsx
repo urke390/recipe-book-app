@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { List, Check } from 'lucide-react'
 import { STEP_TYPE_LABELS, getStepDisplayTitle } from '@/lib/stepUtils'
 import Qty from '@/components/Qty'
+import { t } from '@/lib/i18n'
 
 export default function AllStepsDrawer({ steps, currentIndex, scaleFactor, onSelectStep }) {
   const [open, setOpen] = useState(false)
@@ -13,12 +14,12 @@ export default function AllStepsDrawer({ steps, currentIndex, scaleFactor, onSel
       <SheetTrigger asChild>
         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
           <List className="w-3.5 h-3.5" />
-          כל השלבים
+          {t('כל השלבים')}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-80 overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>שלבי הייצור ({steps.length})</SheetTitle>
+          <SheetTitle>{t('שלבי הייצור ({n})', { n: steps.length })}</SheetTitle>
         </SheetHeader>
         <div className="space-y-1.5 mt-4">
           {steps.map((step, idx) => {
@@ -31,7 +32,7 @@ export default function AllStepsDrawer({ steps, currentIndex, scaleFactor, onSel
                   onSelectStep(idx)
                   setOpen(false)
                 }}
-                className={`w-full text-right rounded-xl p-3 border transition-all ${
+                className={`w-full text-start rounded-xl p-3 border transition-all ${
                   isActive ? 'bg-primary text-primary-foreground border-primary shadow-soft' : isDone ? 'bg-success/10 border-success/30 text-success' : 'bg-card border-border hover:bg-secondary'
                 }`}
               >
@@ -49,7 +50,7 @@ export default function AllStepsDrawer({ steps, currentIndex, scaleFactor, onSel
                           <Qty value={step.base_quantity * (scaleFactor || 1)} unit={step.unit} />
                         </>
                       )}
-                      {step.type === 'wait_time' && step.duration_minutes && ` • ${step.duration_minutes} דקות`}
+                      {step.type === 'wait_time' && step.duration_minutes && ` • ${t('{n} דקות', { n: step.duration_minutes })}`}
                     </p>
                   </div>
                 </div>

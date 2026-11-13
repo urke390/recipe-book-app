@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import PrintAllRecipes from '@/pages/print/PrintAllRecipes'
+import { t, getLang } from '@/lib/i18n'
 
 export default function Recipes() {
   const navigate = useNavigate()
@@ -72,7 +73,7 @@ export default function Recipes() {
       base = base.filter((r) => r.name?.toLowerCase().includes(q) || r.description?.toLowerCase().includes(q))
     }
     if (sortDir) {
-      base = [...base].sort((a, b) => (sortDir === 'asc' ? 1 : -1) * (a.name || '').localeCompare(b.name || '', 'he'))
+      base = [...base].sort((a, b) => (sortDir === 'asc' ? 1 : -1) * (a.name || '').localeCompare(b.name || '', getLang()))
     }
     return base
   }, [recipes, localOrder, search, activeCategoryId, sortDir])
@@ -90,21 +91,21 @@ export default function Recipes() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
-      toast({ title: 'המתכון נמחק' })
+      toast({ title: t('המתכון נמחק') })
     },
   })
 
   const duplicateMutation = useMutation({
     mutationFn: async (recipe) => {
       const { id, created_at, ...data } = recipe
-      const newRecipe = await db.Recipe.create({ ...data, name: `${data.name} (עותק)` })
+      const newRecipe = await db.Recipe.create({ ...data, name: t('{name} (עותק)', { name: data.name }) })
       const steps = await db.RecipeStep.filter({ recipe_id: id }, 'order')
       await Promise.all(steps.map(({ id: sid, created_at: ca, ...step }) => db.RecipeStep.create({ ...step, recipe_id: newRecipe.id })))
       return newRecipe
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
-      toast({ title: 'המתכון שוכפל בהצלחה' })
+      toast({ title: t('המתכון שוכפל בהצלחה') })
     },
   })
 
@@ -126,21 +127,21 @@ export default function Recipes() {
     <div className="p-4 md:p-8 max-w-6xl mx-auto w-full">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">מתכונים</h1>
+          <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">{t('מתכונים')}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center bg-muted rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-card shadow-soft text-foreground' : 'text-muted-foreground'}`}
-              title="תצוגת סמלים"
+              title={t('תצוגת סמלים')}
             >
               <LayoutGrid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}
               className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-card shadow-soft text-foreground' : 'text-muted-foreground'}`}
-              title="תצוגת רשימה"
+              title={t('תצוגת רשימה')}
             >
               <List className="w-4 h-4" />
             </button>
@@ -149,7 +150,7 @@ export default function Recipes() {
             variant={sortDir ? 'default' : 'outline'}
             size="icon"
             onClick={cycleSort}
-            title={sortDir === 'asc' ? 'מסודר א-ת (לחץ להפוך ת-א)' : sortDir === 'desc' ? 'מסודר ת-א (לחץ לביטול המיון)' : 'מיין לפי א-ב'}
+            title={sortDir === 'asc' ? t('מסודר א-ת (לחץ להפוך ת-א)') : sortDir === 'desc' ? t('מסודר ת-א (לחץ לביטול המיון)') : t('מיין לפי א-ב')}
           >
             {sortDir === 'asc' ? <ArrowDownAZ className="w-4 h-4" /> : sortDir === 'desc' ? <ArrowUpAZ className="w-4 h-4" /> : <ArrowUpDown className="w-4 h-4" />}
           </Button>
@@ -161,7 +162,7 @@ export default function Recipes() {
                 setSortDir(null)
                 setReordering((v) => !v)
               }}
-              title={reordering ? 'סיים סידור מחדש' : 'שנה את סדר המתכונים'}
+              title={reordering ? t('סיים סידור מחדש') : t('שנה את סדר המתכונים')}
               disabled={!!search.trim()}
             >
               {reordering ? <Check className="w-4 h-4" /> : <GripVertical className="w-4 h-4" />}
@@ -169,25 +170,25 @@ export default function Recipes() {
           )}
           <Button variant="outline" className="gap-2" onClick={() => setShowPrintAll(true)}>
             <Printer className="w-4 h-4" />
-            ספר מתכונים
+            {t('ספר מתכונים')}
           </Button>
           {editor ? (
             <Button className="gap-2 shadow-soft" onClick={() => navigate('/recipes/quick')}>
               <Plus className="w-4 h-4" />
-              מתכון חדש
+              {t('מתכון חדש')}
             </Button>
           ) : (
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
               <Lock className="w-3 h-3" />
-              צפייה בלבד
+              {t('צפייה בלבד')}
             </span>
           )}
         </div>
       </div>
 
       <div className="relative mb-4 max-w-sm">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="חיפוש מתכון..." className="pr-9" />
+        <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('חיפוש מתכון...')} className="ps-9" />
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-6">
@@ -197,7 +198,7 @@ export default function Recipes() {
             !activeCategoryId ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-muted-foreground hover:border-primary/50'
           }`}
         >
-          הכל
+          {t('הכל')}
         </button>
         {categories.map((c) => (
           <button
@@ -219,11 +220,11 @@ export default function Recipes() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-24 bg-card border border-border rounded-2xl shadow-soft">
           <BookOpen className="w-14 h-14 text-muted-foreground mx-auto mb-4 opacity-40" />
-          <p className="text-muted-foreground font-medium text-lg">{recipes.length === 0 ? 'אין מתכונים עדיין' : 'לא נמצאו מתכונים תואמים'}</p>
+          <p className="text-muted-foreground font-medium text-lg">{recipes.length === 0 ? t('אין מתכונים עדיין') : t('לא נמצאו מתכונים תואמים')}</p>
           {editor && recipes.length === 0 && (
             <Button variant="outline" className="mt-5 gap-2" onClick={() => navigate('/recipes/quick')}>
               <Plus className="w-4 h-4" />
-              צור מתכון ראשון
+              {t('צור מתכון ראשון')}
             </Button>
           )}
         </div>
@@ -250,12 +251,12 @@ export default function Recipes() {
                           } ${snapshot.isDragging ? 'shadow-card-hover' : 'hover:shadow-card-hover hover:-translate-y-0.5'}`}
                         >
                           {reordering ? (
-                            <div {...dragProvided.dragHandleProps} className="absolute top-1 right-1 p-1 rounded-full bg-muted cursor-grab active:cursor-grabbing">
+                            <div {...dragProvided.dragHandleProps} className="absolute top-1 start-1 p-1 rounded-full bg-muted cursor-grab active:cursor-grabbing">
                               <GripVertical className="w-3.5 h-3.5 text-muted-foreground" />
                             </div>
                           ) : (
                             editor && (
-                              <div className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="absolute top-1 end-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                     <button onClick={(e) => e.stopPropagation()} className="rounded-full bg-card hover:bg-muted p-1 shadow-md border border-border flex items-center justify-center">
@@ -265,15 +266,15 @@ export default function Recipes() {
                                   <DropdownMenuContent align="start" className="w-40" onClick={(e) => e.stopPropagation()}>
                                     <DropdownMenuItem onClick={() => navigate(`/recipes/${recipe.id}/edit`)} className="gap-2">
                                       <Pencil className="w-4 h-4" />
-                                      <span>עריכה</span>
+                                      <span>{t('עריכה')}</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => duplicateMutation.mutate(recipe)} className="gap-2">
                                       <Copy className="w-4 h-4" />
-                                      <span>שכפול</span>
+                                      <span>{t('שכפול')}</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => setDeleteId(recipe.id)} className="gap-2 text-destructive focus:text-destructive">
                                       <Trash2 className="w-4 h-4" />
-                                      <span>מחיקה</span>
+                                      <span>{t('מחיקה')}</span>
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
@@ -314,15 +315,15 @@ export default function Recipes() {
                               <DropdownMenuContent align="start" className="w-40" onClick={(e) => e.stopPropagation()}>
                                 <DropdownMenuItem onClick={() => navigate(`/recipes/${recipe.id}/edit`)} className="gap-2">
                                   <Pencil className="w-4 h-4" />
-                                  <span>עריכה</span>
+                                  <span>{t('עריכה')}</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => duplicateMutation.mutate(recipe)} className="gap-2">
                                   <Copy className="w-4 h-4" />
-                                  <span>שכפול</span>
+                                  <span>{t('שכפול')}</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => setDeleteId(recipe.id)} className="gap-2 text-destructive focus:text-destructive">
                                   <Trash2 className="w-4 h-4" />
-                                  <span>מחיקה</span>
+                                  <span>{t('מחיקה')}</span>
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -344,11 +345,11 @@ export default function Recipes() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>מחיקת מתכון</AlertDialogTitle>
-            <AlertDialogDescription>האם אתה בטוח? פעולה זו תמחק את המתכון וכל שלביו ולא ניתן לשחזרה.</AlertDialogDescription>
+            <AlertDialogTitle>{t('מחיקת מתכון')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('האם אתה בטוח? פעולה זו תמחק את המתכון וכל שלביו ולא ניתן לשחזרה.')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>ביטול</AlertDialogCancel>
+            <AlertDialogCancel>{t('ביטול')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 deleteMutation.mutate(deleteId)
@@ -356,7 +357,7 @@ export default function Recipes() {
               }}
               className="bg-destructive hover:bg-destructive/90"
             >
-              מחק
+              {t('מחק')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

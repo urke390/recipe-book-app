@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { useEditor } from '@/hooks/useEditor'
 import { useToast } from '@/components/ui/use-toast'
+import { t } from '@/lib/i18n'
 
 // Small lock/unlock button for the header. Anyone can browse the app; this
 // is the only place the shared edit code is entered, once per device - and,
@@ -35,7 +36,7 @@ export default function EditCodeDialog() {
     setLoggingOut(true)
     try {
       await logout()
-      toast({ title: 'יצאת ממצב עריכה' })
+      toast({ title: t('יצאת ממצב עריכה') })
     } finally {
       setLoggingOut(false)
     }
@@ -61,7 +62,7 @@ export default function EditCodeDialog() {
       const active = await db.ProductionSession.filter({ status: 'active' })
       await Promise.all(active.map((s) => db.ProductionSession.delete(s.id)))
       await logout()
-      toast({ title: 'יצאת ממצב עריכה', description: 'הייצור המודרך הפעיל נמחק' })
+      toast({ title: t('יצאת ממצב עריכה'), description: t('הייצור המודרך הפעיל נמחק') })
     } finally {
       setLoggingOut(false)
       setConfirmExit(false)
@@ -73,12 +74,12 @@ export default function EditCodeDialog() {
       <>
         <span className="flex items-center gap-1.5 text-xs text-white/80">
           <Unlock className="w-3.5 h-3.5" />
-          עריכה פעילה
+          {t('עריכה פעילה')}
           <button
             onClick={handleLogout}
             disabled={loggingOut}
-            title="צא ממצב עריכה"
-            className="mr-0.5 rounded-md p-1 hover:bg-white/15 transition-colors disabled:opacity-50"
+            title={t('צא ממצב עריכה')}
+            className="ms-0.5 rounded-md p-1 hover:bg-white/15 transition-colors disabled:opacity-50"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>
@@ -87,13 +88,13 @@ export default function EditCodeDialog() {
         <AlertDialog open={confirmExit} onOpenChange={setConfirmExit}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>יציאה ממצב עריכה</AlertDialogTitle>
-              <AlertDialogDescription>יש לך ייצור מודרך פעיל במכשיר הזה. יציאה ממצב עריכה תמחק אותו לצמיתות.</AlertDialogDescription>
+              <AlertDialogTitle>{t('יציאה ממצב עריכה')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('יש לך ייצור מודרך פעיל במכשיר הזה. יציאה ממצב עריכה תמחק אותו לצמיתות.')}</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>המשך במצב עריכה</AlertDialogCancel>
+              <AlertDialogCancel>{t('המשך במצב עריכה')}</AlertDialogCancel>
               <AlertDialogAction onClick={handleConfirmExit} disabled={loggingOut} className="bg-destructive hover:bg-destructive/90">
-                צא בכל זאת
+                {t('צא בכל זאת')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -109,14 +110,14 @@ export default function EditCodeDialog() {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-white/90 hover:bg-white/15 transition-colors"
       >
         <Lock className="w-4 h-4" />
-        מצב עריכה
+        {t('מצב עריכה')}
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-sm">
           <form onSubmit={handleSubmit}>
             <DialogHeader>
-              <DialogTitle>הזן קוד עריכה</DialogTitle>
-              <DialogDescription>צפייה פתוחה לכולם; עריכה ותפעול ייצור דורשים את הקוד המשותף.</DialogDescription>
+              <DialogTitle>{t('הזן קוד עריכה')}</DialogTitle>
+              <DialogDescription>{t('צפייה פתוחה לכולם; עריכה ותפעול ייצור דורשים את הקוד המשותף.')}</DialogDescription>
             </DialogHeader>
             <div className="py-4">
               <Input
@@ -124,13 +125,13 @@ export default function EditCodeDialog() {
                 type="password"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                placeholder="קוד עריכה"
+                placeholder={t('קוד עריכה')}
               />
               {error && <p className="text-sm text-destructive mt-2">{error}</p>}
             </div>
             <DialogFooter>
               <Button type="submit" disabled={busy || !code}>
-                {busy ? 'בודק...' : 'אשר'}
+                {busy ? t('בודק...') : t('אשר')}
               </Button>
             </DialogFooter>
           </form>

@@ -7,17 +7,18 @@ import { useEditor } from '@/hooks/useEditor'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { getPageLabel } from '@/lib/pageLabels'
+import { t, getLocale } from '@/lib/i18n'
 
 function formatRelative(iso) {
   const diffMin = Math.round((Date.now() - new Date(iso).getTime()) / 60000)
-  if (diffMin < 1) return 'עכשיו'
-  if (diffMin < 60) return `לפני ${diffMin} דק'`
+  if (diffMin < 1) return t('עכשיו')
+  if (diffMin < 60) return t("לפני {n} דק'", { n: diffMin })
   const diffH = Math.round(diffMin / 60)
-  if (diffH < 24) return `לפני ${diffH} שע'`
-  return new Date(iso).toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' })
+  if (diffH < 24) return t("לפני {n} שע'", { n: diffH })
+  return new Date(iso).toLocaleDateString(getLocale(), { day: '2-digit', month: '2-digit' })
 }
 
-const STATUS_LABEL = { open: 'פתוח', done: 'טופל', dismissed: 'נדחה' }
+const STATUS_LABEL = { open: t('פתוח'), done: t('טופל'), dismissed: t('נדחה') }
 const STATUS_VARIANT = { open: 'warning', done: 'success', dismissed: 'secondary' }
 
 // Defined at module scope (not inside FeedbackSettings) on purpose: a
@@ -70,7 +71,7 @@ function NoteRow({
           <div className="space-y-2">
             <textarea
               autoFocus
-              dir="rtl"
+              dir="auto"
               value={draft}
               onChange={(e) => onDraftChange(e.target.value)}
               rows={3}
@@ -78,10 +79,10 @@ function NoteRow({
             />
             <div className="flex gap-2">
               <Button size="sm" className="h-7 text-xs" disabled={!draft.trim() || saving} onClick={onSaveEdit}>
-                שמור
+                {t('שמור')}
               </Button>
               <Button size="sm" variant="outline" className="h-7 text-xs" onClick={onCancelEdit}>
-                ביטול
+                {t('ביטול')}
               </Button>
             </div>
           </div>
@@ -96,7 +97,7 @@ function NoteRow({
                 <div key={idx} className="space-y-1.5">
                   <textarea
                     autoFocus
-                    dir="rtl"
+                    dir="auto"
                     value={reasonDraft}
                     onChange={(e) => onReasonDraftChange(e.target.value)}
                     rows={2}
@@ -104,22 +105,22 @@ function NoteRow({
                   />
                   <div className="flex gap-2">
                     <Button size="sm" className="h-7 text-xs" disabled={!reasonDraft.trim() || savingReason} onClick={onSaveEditReason}>
-                      שמור
+                      {t('שמור')}
                     </Button>
                     <Button size="sm" variant="outline" className="h-7 text-xs" onClick={onCancelEditReason}>
-                      ביטול
+                      {t('ביטול')}
                     </Button>
                   </div>
                 </div>
               ) : (
                 <div key={idx} className="flex items-start gap-1">
                   <p className="flex-1 text-xs text-warning bg-warning/10 rounded-md px-2 py-1.5 whitespace-pre-wrap">
-                    <span className="font-semibold">הטיפול לא היה מספיק: </span>
+                    <span className="font-semibold">{t('הטיפול לא היה מספיק:')} </span>
                     {r.reason}
                     <span className="opacity-60"> · {formatRelative(r.at)}</span>
                   </p>
                   {!busy && (
-                    <button onClick={() => onStartEditReason(idx, r.reason)} className="flex-shrink-0 p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted" title="ערוך את הסיבה">
+                    <button onClick={() => onStartEditReason(idx, r.reason)} className="flex-shrink-0 p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted" title={t('ערוך את הסיבה')}>
                       <Pencil className="w-3 h-3" />
                     </button>
                   )}
@@ -133,19 +134,19 @@ function NoteRow({
           <div className="space-y-2 mt-2">
             <textarea
               autoFocus
-              dir="rtl"
+              dir="auto"
               value={reopenDraft}
               onChange={(e) => onReopenDraftChange(e.target.value)}
               rows={3}
-              placeholder="מה לא היה טוב בטיפול הקודם?"
+              placeholder={t('מה לא היה טוב בטיפול הקודם?')}
               className="w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
             />
             <div className="flex gap-2">
               <Button size="sm" className="h-7 text-xs" disabled={!reopenDraft.trim() || reopening} onClick={onSubmitReopen}>
-                פתח מחדש
+                {t('פתח מחדש')}
               </Button>
               <Button size="sm" variant="outline" className="h-7 text-xs" onClick={onCancelReopen}>
-                ביטול
+                {t('ביטול')}
               </Button>
             </div>
           </div>
@@ -153,25 +154,25 @@ function NoteRow({
       </div>
       {!busy && (
         <div className="flex flex-col gap-1 flex-shrink-0">
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={onStartEdit} title="ערוך">
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={onStartEdit} title={t('ערוך')}>
             <Pencil className="w-3.5 h-3.5" />
           </Button>
           {n.status === 'open' && (
             <>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-success" onClick={() => onSetStatus('done')} title="סמן כטופל">
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-success" onClick={() => onSetStatus('done')} title={t('סמן כטופל')}>
                 <Check className="w-3.5 h-3.5" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => onSetStatus('dismissed')} title="דחה">
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => onSetStatus('dismissed')} title={t('דחה')}>
                 <X className="w-3.5 h-3.5" />
               </Button>
             </>
           )}
           {n.status === 'done' && (
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-warning" onClick={onStartReopen} title="הטיפול לא היה טוב - פתח מחדש">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-warning" onClick={onStartReopen} title={t('הטיפול לא היה טוב - פתח מחדש')}>
               <RotateCcw className="w-3.5 h-3.5" />
             </Button>
           )}
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={onDelete} title="מחק">
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={onDelete} title={t('מחק')}>
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </div>
@@ -256,7 +257,7 @@ export default function FeedbackSettings() {
   if (ready && !editor) {
     return (
       <div className="p-4 md:p-8 max-w-md mx-auto w-full text-center py-24">
-        <p className="text-muted-foreground">צריך להיות במצב עריכה כדי לראות את המשוב.</p>
+        <p className="text-muted-foreground">{t('צריך להיות במצב עריכה כדי לראות את המשוב.')}</p>
       </div>
     )
   }
@@ -303,9 +304,9 @@ export default function FeedbackSettings() {
       <div className="mb-6">
         <h1 className="text-2xl font-heading font-bold flex items-center gap-2">
           <MessageSquareText className="w-6 h-6 text-primary" />
-          הערות ומשוב
+          {t('הערות ומשוב')}
         </h1>
-        <p className="text-muted-foreground text-sm mt-0.5">הערות שהשארת תוך כדי שימוש באפליקציה, עם העמוד מצורף אוטומטית</p>
+        <p className="text-muted-foreground text-sm mt-0.5">{t('הערות שהשארת תוך כדי שימוש באפליקציה, עם העמוד מצורף אוטומטית')}</p>
       </div>
 
       {isLoading ? (
@@ -313,18 +314,18 @@ export default function FeedbackSettings() {
           <div className="w-8 h-8 border-4 border-border border-t-primary rounded-full animate-spin" />
         </div>
       ) : notes.length === 0 ? (
-        <div className="text-center py-20 bg-card border border-border rounded-2xl shadow-soft text-muted-foreground text-sm">אין הערות עדיין — לחץ על כפתור ההערה הצף בכל עמוד כדי להוסיף אחת</div>
+        <div className="text-center py-20 bg-card border border-border rounded-2xl shadow-soft text-muted-foreground text-sm">{t('אין הערות עדיין — לחץ על כפתור ההערה הצף בכל עמוד כדי להוסיף אחת')}</div>
       ) : (
         <div className="space-y-4">
           {open.length > 0 && (
             <div className="space-y-2">
-              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">פתוחות ({open.length})</h2>
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">{t('פתוחות ({n})', { n: open.length })}</h2>
               {open.map(renderRow)}
             </div>
           )}
           {other.length > 0 && (
             <div className="space-y-2">
-              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">טופלו / נדחו</h2>
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">{t('טופלו / נדחו')}</h2>
               {other.map(renderRow)}
             </div>
           )}

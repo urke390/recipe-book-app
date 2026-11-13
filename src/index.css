@@ -68,7 +68,7 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
-    direction: rtl;
+    /* direction comes from <html dir>, set per language by src/lib/i18n.js */
     font-feature-settings: 'tnum' 1;
     margin: 0;
   }
@@ -133,7 +133,32 @@
   height: 100%;
   overflow-y: auto;
   padding: 2rem 1.75rem;
-  direction: rtl;
+}
+
+/* LTR (e.g. Spanish): the layout itself mirrors via logical Tailwind
+   classes; these rules mirror the few purely visual RTL assumptions. */
+[dir='ltr'] .dir-icon {
+  transform: scaleX(-1);
+}
+[dir='ltr'] .book-page.page-right {
+  background-image: linear-gradient(to left, rgba(20, 15, 10, 0.28), transparent 9%);
+}
+[dir='ltr'] .book-page.page-left {
+  background-image: linear-gradient(to right, rgba(20, 15, 10, 0.28), transparent 9%);
+}
+[dir='ltr'] .book-open-animation {
+  transform-origin: left center;
+  animation-name: book-page-open-ltr;
+}
+@keyframes book-page-open-ltr {
+  from {
+    transform: perspective(1600px) rotateY(35deg);
+    opacity: 0;
+  }
+  to {
+    transform: perspective(1600px) rotateY(0deg);
+    opacity: 1;
+  }
 }
 .book-cover {
   height: 100%;

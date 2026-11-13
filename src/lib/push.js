@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
+import { t } from '@/lib/i18n'
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY
 
@@ -23,10 +24,10 @@ export async function getPushSubscription() {
 // subscribes to Web Push, and saves the subscription so the scheduled
 // notifier function can reach this device even when the app isn't open.
 export async function subscribeToPush() {
-  if (!isPushSupported()) throw new Error('דפדפן זה לא תומך בהתראות Push')
+  if (!isPushSupported()) throw new Error(t('דפדפן זה לא תומך בהתראות Push'))
 
   const permission = await Notification.requestPermission()
-  if (permission !== 'granted') throw new Error('ההרשאה להתראות נדחתה')
+  if (permission !== 'granted') throw new Error(t('ההרשאה להתראות נדחתה'))
 
   const reg = await navigator.serviceWorker.register('/sw.js')
   await navigator.serviceWorker.ready

@@ -6,11 +6,12 @@ import { AutoTextarea } from '@/components/ui/auto-textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Check, X, GripVertical } from 'lucide-react'
 import { STEP_TYPE_COLORS } from '@/lib/stepUtils'
+import { t } from '@/lib/i18n'
 
 const TIME_UNITS = [
-  { value: 'minutes', label: 'דקות', multiplier: 1 },
-  { value: 'hours', label: 'שעות', multiplier: 60 },
-  { value: 'days', label: 'ימים', multiplier: 1440 },
+  { value: 'minutes', label: t('דקות'), multiplier: 1 },
+  { value: 'hours', label: t('שעות'), multiplier: 60 },
+  { value: 'days', label: t('ימים'), multiplier: 1440 },
 ]
 
 function decomposeDuration(minutes) {
@@ -83,23 +84,23 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ingredient_addition">הוספת רכיב</SelectItem>
-            <SelectItem value="wait_time">זמן המתנה</SelectItem>
-            <SelectItem value="action">פעולה</SelectItem>
-            <SelectItem value="section_header">כותרת משנה</SelectItem>
+            <SelectItem value="ingredient_addition">{t('הוספת רכיב')}</SelectItem>
+            <SelectItem value="wait_time">{t('זמן המתנה')}</SelectItem>
+            <SelectItem value="action">{t('פעולה')}</SelectItem>
+            <SelectItem value="section_header">{t('כותרת משנה')}</SelectItem>
           </SelectContent>
         </Select>
 
         {type === 'ingredient_addition' && (
           <>
-            <AutoTextarea value={ingredientName} onChange={(e) => setIngredientName(e.target.value)} className="text-sm border-dashed" placeholder="שם הרכיב..." />
-            <Input type="number" value={baseQuantity} onChange={(e) => setBaseQuantity(e.target.value)} className="h-7 text-sm w-16 border-dashed" placeholder="כמות" />
+            <AutoTextarea value={ingredientName} onChange={(e) => setIngredientName(e.target.value)} className="text-sm border-dashed" placeholder={t('שם הרכיב...')} />
+            <Input type="number" value={baseQuantity} onChange={(e) => setBaseQuantity(e.target.value)} className="h-7 text-sm w-16 border-dashed" placeholder={t('כמות')} />
             <Select value={unit || 'none'} onValueChange={(v) => setUnit(v === 'none' ? '' : v)}>
               <SelectTrigger className="h-7 text-sm w-20 border-dashed">
-                <SelectValue placeholder="יחידה" />
+                <SelectValue placeholder={t('יחידה')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">ללא</SelectItem>
+                <SelectItem value="none">{t('ללא')}</SelectItem>
                 {units.map((u) => (
                   <SelectItem key={u.id} value={u.name}>
                     {u.name}
@@ -112,7 +113,7 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
 
         {type === 'wait_time' && (
           <>
-            <Input type="number" value={durationValue} onChange={(e) => setDurationValue(e.target.value)} className="h-7 text-sm w-16 border-dashed" placeholder="משך" />
+            <Input type="number" value={durationValue} onChange={(e) => setDurationValue(e.target.value)} className="h-7 text-sm w-16 border-dashed" placeholder={t('משך')} />
             <Select value={durationUnit} onValueChange={setDurationUnit}>
               <SelectTrigger className="h-7 text-sm w-20 border-dashed">
                 <SelectValue />
@@ -125,24 +126,24 @@ export default function StepRowEditor({ step, stepIndex, recipeId, onSave, onClo
                 ))}
               </SelectContent>
             </Select>
-            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder="בשביל מה ממתינים?" />
+            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder={t('בשביל מה ממתינים?')} />
           </>
         )}
 
         {type === 'action' && (
           <>
-            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder="שם הפעולה..." />
+            <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder={t('שם הפעולה...')} />
             <label className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap cursor-pointer flex-shrink-0">
               <input type="checkbox" checked={isFinalStep} onChange={(e) => setIsFinalStep(e.target.checked)} className="w-3 h-3 accent-primary" />
-              פעולה אחרונה בלבד
+              {t('פעולה אחרונה בלבד')}
             </label>
           </>
         )}
 
-        {type === 'section_header' && <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder="לדוגמה: לציפוי..." />}
+        {type === 'section_header' && <AutoTextarea value={title} onChange={(e) => setTitle(e.target.value)} className="text-sm border-dashed" placeholder={t('לדוגמה: לציפוי...')} />}
 
         {type !== 'section_header' && (
-          <AutoTextarea value={instructions} onChange={(e) => setInstructions(e.target.value)} className="text-sm border-dashed mt-1" placeholder="הוראות נוספות (אופציונלי)..." />
+          <AutoTextarea value={instructions} onChange={(e) => setInstructions(e.target.value)} className="text-sm border-dashed mt-1" placeholder={t('הוראות נוספות (אופציונלי)...')} />
         )}
       </div>
 

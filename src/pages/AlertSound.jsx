@@ -4,6 +4,7 @@ import SoundSettings from '@/components/SoundSettings'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { isPushSupported, getPushSubscription, subscribeToPush, unsubscribeFromPush } from '@/lib/push'
+import { t } from '@/lib/i18n'
 
 function PushSettings() {
   const { toast } = useToast()
@@ -22,14 +23,14 @@ function PushSettings() {
       if (subscribed) {
         await unsubscribeFromPush()
         setSubscribed(false)
-        toast({ title: 'התראות כובו במכשיר זה' })
+        toast({ title: t('התראות כובו במכשיר זה') })
       } else {
         await subscribeToPush()
         setSubscribed(true)
-        toast({ title: 'התראות הופעלו במכשיר זה' })
+        toast({ title: t('התראות הופעלו במכשיר זה') })
       }
     } catch (e) {
-      toast({ title: 'שגיאה', description: e.message, variant: 'destructive' })
+      toast({ title: t('שגיאה'), description: e.message, variant: 'destructive' })
     } finally {
       setBusy(false)
     }
@@ -39,24 +40,24 @@ function PushSettings() {
     <div className="bg-card border border-border rounded-2xl p-5 shadow-soft space-y-3">
       <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
         <Smartphone className="w-4 h-4 text-primary" />
-        התראות למכשיר הזה
+        {t('התראות למכשיר הזה')}
       </h3>
       <p className="text-sm text-muted-foreground">
-        כשמופעל, המכשיר הזה יקבל התראה גם אם האפליקציה סגורה או המסך כבוי - כשטיימר ייצור מסתיים. יש להפעיל בנפרד בכל מכשיר שרוצים שיקבל התראות.
+        {t('כשמופעל, המכשיר הזה יקבל התראה גם אם האפליקציה סגורה או המסך כבוי - כשטיימר ייצור מסתיים. יש להפעיל בנפרד בכל מכשיר שרוצים שיקבל התראות.')}
       </p>
       {!supported ? (
-        <p className="text-sm text-warning">הדפדפן הזה לא תומך בהתראות Push (ב-iPhone יש להוסיף את האתר למסך הבית תחילה).</p>
+        <p className="text-sm text-warning">{t('הדפדפן הזה לא תומך בהתראות Push (ב-iPhone יש להוסיף את האתר למסך הבית תחילה).')}</p>
       ) : (
         <Button onClick={handleToggle} disabled={busy} variant={subscribed ? 'outline' : 'default'} className="gap-2">
           {subscribed ? (
             <>
               <BellOff className="w-4 h-4" />
-              כבה התראות במכשיר זה
+              {t('כבה התראות במכשיר זה')}
             </>
           ) : (
             <>
               <BellRing className="w-4 h-4" />
-              הפעל התראות במכשיר זה
+              {t('הפעל התראות במכשיר זה')}
             </>
           )}
         </Button>
@@ -71,9 +72,9 @@ export default function AlertSound() {
       <div>
         <h1 className="text-2xl font-heading font-bold flex items-center gap-2">
           <Bell className="w-6 h-6 text-primary" />
-          התראות
+          {t('התראות')}
         </h1>
-        <p className="text-muted-foreground text-sm mt-0.5">צליל והתראות בסיום טיימר ייצור</p>
+        <p className="text-muted-foreground text-sm mt-0.5">{t('צליל והתראות בסיום טיימר ייצור')}</p>
       </div>
       <PushSettings />
       <div className="bg-card border border-border rounded-2xl p-5 shadow-soft">

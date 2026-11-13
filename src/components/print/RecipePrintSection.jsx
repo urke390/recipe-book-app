@@ -1,4 +1,5 @@
 import { formatDurationDisplay, getStepDisplayTitle } from '@/lib/stepUtils'
+import { t } from '@/lib/i18n'
 
 // One recipe's printable content: ingredients (scaled), full step list, and
 // parameter targets.
@@ -42,7 +43,7 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
         {recipe.description && <p className="text-base opacity-70 mt-1">{recipe.description}</p>}
         {totalScaleFactor !== 1 && (
           <p className="text-sm opacity-70 mt-1">
-            יחס הכנה: <strong>{totalScaleFactor.toFixed(2)}×</strong>
+            {t('יחס הכנה:')} <strong>{totalScaleFactor.toFixed(2)}×</strong>
           </p>
         )}
       </header>
@@ -51,13 +52,13 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
         <div className={`mb-6 ${ingredientRows.length > 0 && recipeParams.length > 0 ? 'grid grid-cols-2 gap-6' : ''}`}>
           {ingredientRows.length > 0 && (
             <div>
-              <h3 className="text-lg font-bold mb-2">רכיבים</h3>
+              <h3 className="text-lg font-bold mb-2">{t('רכיבים')}</h3>
               <table className="w-full text-sm border-collapse">
                 <tbody>
                   {ingredientRows.map((row) => (
                     <tr key={row.key} className="border-b border-current/20">
-                      <td className="py-1.5 pl-2">{row.name}</td>
-                      <td className="py-1.5 text-left font-bold w-32">{row.display}</td>
+                      <td className="py-1.5 pe-2">{row.name}</td>
+                      <td className="py-1.5 text-end font-bold w-32">{row.display}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -67,7 +68,7 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
 
           {recipeParams.length > 0 && (
             <div>
-              <h3 className="text-lg font-bold mb-2">פרמטרים</h3>
+              <h3 className="text-lg font-bold mb-2">{t('פרמטרים')}</h3>
               <table className="w-full text-sm border-collapse">
                 <tbody>
                   {recipeParams.map((pv) => {
@@ -76,8 +77,8 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
                     const isSingle = pv.value_type === 'single'
                     return (
                       <tr key={pv.parameter_id} className="border-b border-current/20">
-                        <td className="py-1.5 pl-2">{param.name}</td>
-                        <td className="py-1.5 text-left font-bold w-28">
+                        <td className="py-1.5 pe-2">{param.name}</td>
+                        <td className="py-1.5 text-end font-bold w-28">
                           {isSingle ? pv.value : `${pv.value_min ?? '?'}–${pv.value_max ?? '?'}`} {param.unit}
                         </td>
                       </tr>
@@ -91,7 +92,7 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
       )}
 
       <div>
-        <h3 className="text-lg font-bold mb-2">שלבי הכנה</h3>
+        <h3 className="text-lg font-bold mb-2">{t('שלבי הכנה')}</h3>
         {(() => {
           const renderStep = (s) => (
             <li
@@ -100,7 +101,7 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
                 s.type === 'section_header'
                   ? 'list-none font-bold'
                   : s.type === 'ingredient_addition'
-                    ? 'list-none pr-3'
+                    ? 'list-none ps-3'
                     : undefined
               }
               style={s.type === 'section_header' || s.type === 'ingredient_addition' ? { counterIncrement: 'list-item 0' } : undefined}
@@ -122,13 +123,13 @@ export default function RecipePrintSection({ recipe, steps, parameters, vatScale
           const rightSteps = steps.slice(0, half)
           const leftSteps = steps.slice(half)
           if (leftSteps.length === 0) {
-            return <ol className="text-sm space-y-1.5 list-decimal pr-5">{rightSteps.map(renderStep)}</ol>
+            return <ol className="text-sm space-y-1.5 list-decimal ps-5">{rightSteps.map(renderStep)}</ol>
           }
           return (
             <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
-              <ol className="text-sm space-y-1.5 list-decimal pr-5">{rightSteps.map(renderStep)}</ol>
+              <ol className="text-sm space-y-1.5 list-decimal ps-5">{rightSteps.map(renderStep)}</ol>
               <div className="w-px bg-current/20" />
-              <ol start={half + 1} className="text-sm space-y-1.5 list-decimal pr-5">
+              <ol start={half + 1} className="text-sm space-y-1.5 list-decimal ps-5">
                 {leftSteps.map(renderStep)}
               </ol>
             </div>

@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Button } from '@/components/ui/button'
 import { ClipboardList } from 'lucide-react'
 import Qty from '@/components/Qty'
+import { t } from '@/lib/i18n'
 
 // Read-only list of every ingredient in the recipe (scaled), for glancing at
 // everything needed without stepping through the whole guided flow - sits
@@ -16,12 +17,12 @@ export default function AllIngredientsDrawer({ steps, scaleFactor }) {
       <SheetTrigger asChild>
         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
           <ClipboardList className="w-3.5 h-3.5" />
-          כל הרכיבים
+          {t('כל הרכיבים')}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-80 overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>כל הרכיבים ({ingredientSteps.length})</SheetTitle>
+          <SheetTitle>{t('כל הרכיבים ({n})', { n: ingredientSteps.length })}</SheetTitle>
         </SheetHeader>
         <div className="space-y-1.5 mt-4">
           {ingredientSteps.map((s) => (

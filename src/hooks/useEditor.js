@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase, ensureAnonSession, isEditor, redeemEditCode, exitEditorMode } from '@/lib/supabaseClient'
+import { t } from '@/lib/i18n'
 
 // Tracks whether *this device* currently holds write access (has redeemed the
 // shared edit code). The real gate is server-side RLS - this hook only
@@ -32,12 +33,12 @@ export function useEditor() {
       const { data } = await supabase.auth.getSession()
       const ok = isEditor(data.session)
       setEditor(ok)
-      if (!ok) setError('הקוד שגוי')
+      if (!ok) setError(t('הקוד שגוי'))
       return ok
     } catch (e) {
       // Surface the real failure (network/CORS/server error) instead of
       // always blaming the code - that swallowed a real bug during setup.
-      setError(e?.message === 'invalid code' ? 'הקוד שגוי' : `שגיאה: ${e?.message || 'לא ידועה'}`)
+      setError(e?.message === 'invalid code' ? t('הקוד שגוי') : t('שגיאה: {msg}', { msg: e?.message || t('לא ידועה') }))
       return false
     }
   }

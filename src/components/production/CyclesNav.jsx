@@ -1,11 +1,12 @@
 import { Check } from 'lucide-react'
+import { t } from '@/lib/i18n'
 
 export default function CyclesNav({ totalVats, currentVat, completedVats = [], onMarkComplete }) {
   if (!totalVats || totalVats <= 1) return null
 
   return (
     <div className="flex items-center justify-center gap-1.5 px-4 py-2 bg-muted/40 border-b border-border overflow-x-auto">
-      <span className="text-xs text-muted-foreground font-medium flex-shrink-0 ml-1">מחזורים:</span>
+      <span className="text-xs text-muted-foreground font-medium flex-shrink-0 me-1">{t('מחזורים:')}</span>
       <div className="flex items-center gap-1.5">
         {Array.from({ length: totalVats }, (_, i) => {
           const vatNum = i + 1
@@ -16,7 +17,7 @@ export default function CyclesNav({ totalVats, currentVat, completedVats = [], o
             <div key={vatNum} className="flex items-center gap-1 flex-shrink-0">
               <button
                 onClick={() => onMarkComplete && onMarkComplete(vatNum)}
-                title={isDone ? `מחזור ${vatNum} הושלם` : `סמן מחזור ${vatNum} כהושלם`}
+                title={isDone ? t('מחזור {n} הושלם', { n: vatNum }) : t('סמן מחזור {n} כהושלם', { n: vatNum })}
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
                   isDone
                     ? 'bg-success border-success text-success-foreground'

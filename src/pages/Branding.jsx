@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
+import { t } from '@/lib/i18n'
 
 function hexToHslString(hex) {
   const r = parseInt(hex.slice(1, 3), 16) / 255
@@ -78,14 +79,14 @@ export default function Branding() {
   const handleSave = () => {
     updateBranding(
       { title, primary_color: hexToHslString(primaryHex), background_color: hexToHslString(backgroundHex) },
-      { onSuccess: () => toast({ title: 'העיצוב נשמר' }) },
+      { onSuccess: () => toast({ title: t('העיצוב נשמר') }) },
     )
   }
 
   if (ready && !editor) {
     return (
       <div className="p-4 md:p-8 max-w-md mx-auto w-full text-center py-24">
-        <p className="text-muted-foreground">צריך להיות במצב עריכה כדי לשנות את העיצוב.</p>
+        <p className="text-muted-foreground">{t('צריך להיות במצב עריכה כדי לשנות את העיצוב.')}</p>
       </div>
     )
   }
@@ -95,20 +96,20 @@ export default function Branding() {
       <div className="mb-6">
         <h1 className="text-2xl font-heading font-bold flex items-center gap-2">
           <Palette className="w-6 h-6 text-primary" />
-          עיצוב
+          {t('עיצוב')}
         </h1>
-        <p className="text-muted-foreground text-sm mt-0.5">שם האפליקציה וצבעי העמוד</p>
+        <p className="text-muted-foreground text-sm mt-0.5">{t('שם האפליקציה וצבעי העמוד')}</p>
       </div>
 
       <div className="space-y-4 bg-card border border-border rounded-2xl p-5 shadow-soft">
         <div>
-          <Label className="mb-1 block">שם האפליקציה</Label>
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="ספר מתכונים ביתי" />
+          <Label className="mb-1 block">{t('שם האפליקציה')}</Label>
+          <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('ספר מתכונים ביתי')} />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label className="mb-1 block">צבע ניווט וכפתורים</Label>
+            <Label className="mb-1 block">{t('צבע ניווט וכפתורים')}</Label>
             <div className="flex items-center gap-2">
               <input type="color" value={primaryHex} onChange={(e) => setPrimaryHex(e.target.value)} className="w-10 h-10 rounded-lg border border-border cursor-pointer" />
               <span className="text-xs text-muted-foreground" dir="ltr">
@@ -117,7 +118,7 @@ export default function Branding() {
             </div>
           </div>
           <div>
-            <Label className="mb-1 block">צבע רקע כללי</Label>
+            <Label className="mb-1 block">{t('צבע רקע כללי')}</Label>
             <div className="flex items-center gap-2">
               <input type="color" value={backgroundHex} onChange={(e) => setBackgroundHex(e.target.value)} className="w-10 h-10 rounded-lg border border-border cursor-pointer" />
               <span className="text-xs text-muted-foreground" dir="ltr">
@@ -128,7 +129,7 @@ export default function Branding() {
         </div>
 
         <Button onClick={handleSave} disabled={!title || isUpdating} className="w-full">
-          {isUpdating ? 'שומר...' : 'שמור'}
+          {isUpdating ? t('שומר...') : t('שמור')}
         </Button>
       </div>
     </div>

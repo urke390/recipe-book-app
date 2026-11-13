@@ -9,6 +9,7 @@ import PrintModal from '@/components/print/PrintModal'
 import BookViewer from '@/components/print/BookViewer'
 import FeedbackWidget from '@/components/FeedbackWidget'
 import { exportHtmlToWord } from '@/lib/exportWord'
+import { t } from '@/lib/i18n'
 
 // onClose lets this be opened as an in-app modal (see Recipes.jsx); without
 // it, reads from the route (/print/recipes) and renders as a full standalone
@@ -20,7 +21,7 @@ export default function PrintAllRecipes({ onClose }) {
   const isModal = !!onClose
   const printRootRef = useRef(null)
 
-  const exportWord = () => exportHtmlToWord(printRootRef.current.innerHTML, 'ספר מתכונים')
+  const exportWord = () => exportHtmlToWord(printRootRef.current.innerHTML, t('ספר מתכונים'))
 
   const { data: recipes = [] } = useQuery({ queryKey: ['recipes'], queryFn: () => db.Recipe.list('name') })
   const { data: parameters = [] } = useQuery({ queryKey: ['parameters'], queryFn: () => db.Parameter.list() })
@@ -37,11 +38,11 @@ export default function PrintAllRecipes({ onClose }) {
     <>
       <Button variant="outline" size="sm" className="gap-1.5" onClick={exportWord}>
         <FileText className="w-3.5 h-3.5" />
-        ייצוא ל-Word
+        {t('ייצוא ל-Word')}
       </Button>
       <Button size="sm" className="gap-1.5" onClick={() => window.print()}>
         <Printer className="w-3.5 h-3.5" />
-        הדפס
+        {t('הדפס')}
       </Button>
     </>
   )
@@ -66,7 +67,7 @@ export default function PrintAllRecipes({ onClose }) {
 
   if (isModal) {
     return (
-      <PrintModal onClose={onClose} title="ספר מתכונים" actions={actions}>
+      <PrintModal onClose={onClose} title={t('ספר מתכונים')} actions={actions}>
         {content}
       </PrintModal>
     )
@@ -76,9 +77,9 @@ export default function PrintAllRecipes({ onClose }) {
     <div className="min-h-screen bg-background">
       <div className="no-print sticky top-0 bg-card border-b border-border p-3 flex items-center gap-2 z-10">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="dir-icon w-5 h-5" />
         </Button>
-        <span className="flex-1 font-semibold text-sm">ספר מתכונים</span>
+        <span className="flex-1 font-semibold text-sm">{t('ספר מתכונים')}</span>
         {actions}
       </div>
       {content}

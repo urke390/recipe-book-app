@@ -6,6 +6,7 @@ import { getPageLabel } from '@/lib/pageLabels'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { useToast } from '@/components/ui/use-toast'
+import { t } from '@/lib/i18n'
 
 function describeElement(el) {
   if (!el) return null
@@ -116,12 +117,12 @@ export default function FeedbackWidget() {
           element: target,
         },
       })
-      toast({ title: 'נשמר', description: 'נמשיך מזה בפעם הבאה' })
+      toast({ title: t('נשמר'), description: t('נמשיך מזה בפעם הבאה') })
       setNote('')
       setTarget(null)
       setDialogOpen(false)
     } catch (err) {
-      toast({ title: 'שגיאה בשמירה', description: err.message, variant: 'destructive' })
+      toast({ title: t('שגיאה בשמירה'), description: err.message, variant: 'destructive' })
     } finally {
       setBusy(false)
     }
@@ -155,8 +156,8 @@ export default function FeedbackWidget() {
           // `document.body.style.pointerEvents = 'none'` while modal, which
           // this button would otherwise inherit and become unclickable even
           // though it's visually on top (raised z-index alone isn't enough).
-          className="fixed bottom-20 md:bottom-6 left-4 z-[60] w-12 h-12 rounded-full bg-foreground text-background shadow-card-hover flex items-center justify-center hover:scale-105 active:scale-95 transition-transform pointer-events-auto"
-          title="סמן חלק במסך והשאר הערה"
+          className="fixed bottom-20 md:bottom-6 end-4 z-[60] w-12 h-12 rounded-full bg-foreground text-background shadow-card-hover flex items-center justify-center hover:scale-105 active:scale-95 transition-transform pointer-events-auto"
+          title={t('סמן חלק במסך והשאר הערה')}
         >
           <MessageSquarePlus className="w-5 h-5" />
         </button>
@@ -174,8 +175,8 @@ export default function FeedbackWidget() {
             <div className="fixed top-3 inset-x-0 z-[9999] flex justify-center pointer-events-none transition-opacity">
               <div className="pointer-events-auto bg-foreground text-background text-sm font-medium rounded-full shadow-card-hover px-4 py-2 flex items-center gap-2">
                 <MousePointerClick className="w-4 h-4" />
-                <span>לחץ על החלק שברצונך להעיר עליו</span>
-                <button onClick={cancelPicking} className="mr-1 rounded-full hover:bg-background/20 p-0.5">
+                <span>{t('לחץ על החלק שברצונך להעיר עליו')}</span>
+                <button onClick={cancelPicking} className="ms-1 rounded-full hover:bg-background/20 p-0.5">
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -188,34 +189,34 @@ export default function FeedbackWidget() {
         <DialogContent className="max-w-sm">
           <form onSubmit={handleSubmit}>
             <DialogHeader>
-              <DialogTitle>הערה על "{pageLabel}"</DialogTitle>
+              <DialogTitle>{t('הערה על "{name}"', { name: pageLabel })}</DialogTitle>
               <DialogDescription>
                 {target ? (
                   <>
-                    מצורף: <span className="font-medium text-foreground">{target.label}</span> ({target.tag})
+                    {t('מצורף:')} <span className="font-medium text-foreground">{target.label}</span> ({target.tag})
                   </>
                 ) : (
-                  'הערה כללית על העמוד (לא נבחר אלמנט ספציפי)'
+                  t('הערה כללית על העמוד (לא נבחר אלמנט ספציפי)')
                 )}
               </DialogDescription>
             </DialogHeader>
             {!target && (
               <button type="button" onClick={() => { setDialogOpen(false); startPicking() }} className="text-xs text-primary hover:underline -mt-2 mb-1">
-                רוצה לסמן אלמנט ספציפי במקום?
+                {t('רוצה לסמן אלמנט ספציפי במקום?')}
               </button>
             )}
             <textarea
               autoFocus
-              dir="rtl"
+              dir="auto"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="מה תרצה לשפר כאן?"
+              placeholder={t('מה תרצה לשפר כאן?')}
               rows={4}
               className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm mt-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
             />
             <DialogFooter className="mt-3">
               <Button type="submit" disabled={busy || !note.trim()}>
-                {busy ? 'שומר...' : 'שמור הערה'}
+                {busy ? t('שומר...') : t('שמור הערה')}
               </Button>
             </DialogFooter>
           </form>
