@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
-import { t } from '@/lib/i18n'
+import { t, getLang } from '@/lib/i18n'
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY
 
@@ -42,9 +42,20 @@ export async function subscribeToPush() {
   // Postgres's ON CONFLICT DO UPDATE path under RLS is finicky, so we just
   // clear any stale row for this endpoint first and insert fresh.
   await supabase.from('push_subscriptions').delete().eq('endpoint', json.endpoint)
-  const { error } = await supabase.from('push_subscriptions').insert({ endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth })
+  const { error } = await supabase.from('push_subscriptions').insert({ endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth, lang: getLang() })
   if (error) throw error
   return subscription
+}
+
+// Keeps this device's subscription in the current UI language so timer
+// notifications arrive in it (called once at startup).
+export async function syncPushLanguage() {
+  try {
+    const sub = await getPushSubscription()
+    if (sub) await supabase.from('push_subscriptions').update({ lang: getLang() }).eq('endpoint', sub.endpoint)
+  } catch {
+    // best effort
+  }
 }
 
 export async function unsubscribeFromPush() {

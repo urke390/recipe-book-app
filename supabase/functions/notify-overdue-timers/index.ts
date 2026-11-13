@@ -14,11 +14,14 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import webpush from 'npm:web-push@3'
 
-async function sendPushToOwner(supabase: ReturnType<typeof createClient>, subs: { endpoint: string; p256dh: string; auth: string }[], payload: Record<string, string>) {
+type Sub = { endpoint: string; p256dh: string; auth: string; lang?: string }
+
+// payload is built per subscription so each device gets its own UI language.
+async function sendPushToOwner(supabase: ReturnType<typeof createClient>, subs: Sub[], payloadFor: (sub: Sub) => Record<string, string>) {
   let sent = 0
   for (const sub of subs) {
     try {
-      await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, JSON.stringify(payload))
+      await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, JSON.stringify(payloadFor(sub)))
       sent++
     } catch (e) {
       // A dead/expired subscription - drop it so future runs don't keep retrying it.
@@ -35,12 +38,12 @@ Deno.serve(async () => {
 
   webpush.setVapidDetails(Deno.env.get('VAPID_SUBJECT')!, Deno.env.get('VAPID_PUBLIC_KEY')!, Deno.env.get('VAPID_PRIVATE_KEY')!)
 
-  const { data: subs } = await supabase.from('push_subscriptions').select('endpoint, p256dh, auth, owner_id')
+  const { data: subs } = await supabase.from('push_subscriptions').select('endpoint, p256dh, auth, owner_id, lang')
 
   // Guided production is per-device now - each session only pushes to the
   // subscription(s) registered by the same device that started it, never to
   // every registered device.
-  const subsByOwner = new Map<string, { endpoint: string; p256dh: string; auth: string }[]>()
+  const subsByOwner = new Map<string, Sub[]>()
   for (const sub of subs || []) {
     if (!sub.owner_id) continue
     const list = subsByOwner.get(sub.owner_id) || []
@@ -65,10 +68,23 @@ Deno.serve(async () => {
     return endsAt <= now // just became overdue
   })
 
+  // Spanish recipe names for devices using the Spanish UI (content_translations).
+  const names = [...new Set(dueWait.map((s) => s.recipe_name).filter(Boolean))]
+  const esNames = new Map<string, string>()
+  if (names.length) {
+    const { data: tr } = await supabase.from('content_translations').select('source, es').in('source', names)
+    for (const r of tr || []) esNames.set(r.source, r.es)
+  }
+
   let waitSent = 0
   for (const session of dueWait) {
     const ownerSubs = subsByOwner.get(session.owner_id) || []
-    waitSent += await sendPushToOwner(supabase, ownerSubs, { title: session.recipe_name || 'ספר מתכונים ביתי', body: 'הזמן הסתיים - חזרו לייצור', url: `/production/${session.id}` })
+    const url = `/production/${session.id}`
+    waitSent += await sendPushToOwner(supabase, ownerSubs, (sub) =>
+      sub.lang === 'es'
+        ? { title: (session.recipe_name && esNames.get(session.recipe_name)) || session.recipe_name || 'Recetario casero', body: 'Se acabó el tiempo - vuelve a la producción', url }
+        : { title: session.recipe_name || 'ספר מתכונים ביתי', body: 'הזמן הסתיים - חזרו לייצור', url },
+    )
     await supabase.from('production_sessions').update({ notified_at: new Date().toISOString() }).eq('id', session.id)
   }
 

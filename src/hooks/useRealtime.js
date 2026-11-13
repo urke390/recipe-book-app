@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { translateRow } from '@/lib/contentI18n'
 
 // Keeps a single row in sync via Supabase Realtime - every device viewing the
 // same id sees updates from any other device within ~1s, no polling.
@@ -23,7 +24,7 @@ export function useRealtimeRow(table, id) {
       .single()
       .then(({ data }) => {
         if (active) {
-          setRow(data || null)
+          setRow(data ? translateRow(table, data) : null)
           setLoading(false)
         }
       })
@@ -32,7 +33,7 @@ export function useRealtimeRow(table, id) {
       .channel(`row-${table}-${id}-${instanceIdRef.current}`)
       .on('postgres_changes', { event: '*', schema: 'public', table, filter: `id=eq.${id}` }, (payload) => {
         if (payload.eventType === 'DELETE') setRow(null)
-        else setRow(payload.new)
+        else setRow(translateRow(table, payload.new))
       })
       .subscribe()
 
@@ -67,7 +68,7 @@ export function useRealtimeList(table, filterColumn, filterValue) {
       .eq(filterColumn, filterValue)
       .then(({ data }) => {
         if (active) {
-          setRows(data || [])
+          setRows((data || []).map((r) => translateRow(table, r)))
           setLoading(false)
         }
       })
@@ -76,8 +77,8 @@ export function useRealtimeList(table, filterColumn, filterValue) {
       .channel(`list-${table}-${filterColumn}-${filterValue}-${instanceIdRef.current}`)
       .on('postgres_changes', { event: '*', schema: 'public', table, filter: `${filterColumn}=eq.${filterValue}` }, (payload) => {
         setRows((prev) => {
-          if (payload.eventType === 'INSERT') return [...prev, payload.new]
-          if (payload.eventType === 'UPDATE') return prev.map((r) => (r.id === payload.new.id ? payload.new : r))
+          if (payload.eventType === 'INSERT') return [...prev, translateRow(table, payload.new)]
+          if (payload.eventType === 'UPDATE') return prev.map((r) => (r.id === payload.new.id ? translateRow(table, payload.new) : r))
           if (payload.eventType === 'DELETE') return prev.filter((r) => r.id !== payload.old.id)
           return prev
         })

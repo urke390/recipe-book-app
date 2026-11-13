@@ -3,9 +3,12 @@ import { useEffect } from 'react'
 import { db } from '@/api/db'
 import { t } from '@/lib/i18n'
 
-// Stored in Hebrew (the DB default); shown translated while untouched.
+import { tc } from '@/lib/contentI18n'
+
 const DEFAULT_TITLE = 'ספר מתכונים ביתי'
-const displayTitleOf = (title) => (title === DEFAULT_TITLE ? t(DEFAULT_TITLE) : title)
+// The title is user content: translated via content_translations, with the
+// built-in default also covered by the UI dictionary.
+const displayTitleOf = (title) => (title === DEFAULT_TITLE ? t(DEFAULT_TITLE) : tc(title))
 
 export const DEFAULT_BRANDING = { title: DEFAULT_TITLE, primary_color: '152 48% 30%', background_color: '40 33% 97%' }
 

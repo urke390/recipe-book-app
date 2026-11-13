@@ -3,6 +3,8 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
 import { queryClient } from '@/lib/queryClient'
 import { ensureAnonSession } from '@/lib/supabaseClient'
+import { loadContentTranslations, setOnContentTranslated } from '@/lib/contentI18n'
+import { syncPushLanguage } from '@/lib/push'
 import { useBranding } from '@/hooks/useBranding'
 import { Toaster } from '@/components/ui/toaster'
 import Layout from '@/components/Layout'
@@ -34,7 +36,13 @@ function App() {
   const [sessionReady, setSessionReady] = useState(false)
 
   useEffect(() => {
-    ensureAnonSession().finally(() => setSessionReady(true))
+    // Content translations (Spanish UI only) load before first render so
+    // recipe data never flashes in Hebrew; new ones arriving later refetch.
+    setOnContentTranslated(() => queryClient.invalidateQueries())
+    ensureAnonSession()
+      .then(() => loadContentTranslations())
+      .finally(() => setSessionReady(true))
+    ensureAnonSession().then(syncPushLanguage)
   }, [])
 
   // Every data query needs the anonymous session's JWT to pass RLS - render

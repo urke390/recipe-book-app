@@ -13,6 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import PrintAllRecipes from '@/pages/print/PrintAllRecipes'
 import { t, getLang } from '@/lib/i18n'
+import { untranslate } from '@/lib/contentI18n'
 
 export default function Recipes() {
   const navigate = useNavigate()
@@ -98,7 +99,7 @@ export default function Recipes() {
   const duplicateMutation = useMutation({
     mutationFn: async (recipe) => {
       const { id, created_at, ...data } = recipe
-      const newRecipe = await db.Recipe.create({ ...data, name: t('{name} (עותק)', { name: data.name }) })
+      const newRecipe = await db.Recipe.create({ ...data, name: `${untranslate(data.name)} (עותק)` })
       const steps = await db.RecipeStep.filter({ recipe_id: id }, 'order')
       await Promise.all(steps.map(({ id: sid, created_at: ca, ...step }) => db.RecipeStep.create({ ...step, recipe_id: newRecipe.id })))
       return newRecipe

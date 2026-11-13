@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
+import { translateRow, untranslateValues, translateSavedRow } from '@/lib/contentI18n'
 
 // Thin wrapper around supabase.from(table) giving each table a small
 // consistent API (list/filter/get/create/update/delete) instead of
@@ -10,7 +11,10 @@ function parseSort(sort) {
   return { column, ascending: !desc }
 }
 
+// Content rows are translated for display when the UI is in Spanish, and
+// mapped back to their Hebrew source on write - see src/lib/contentI18n.js.
 function entity(table) {
+  const tr = (row) => translateRow(table, row)
   return {
     async list(sort) {
       let q = supabase.from(table).select('*')
@@ -18,7 +22,7 @@ function entity(table) {
       if (s) q = q.order(s.column, { ascending: s.ascending })
       const { data, error } = await q
       if (error) throw error
-      return data
+      return data.map(tr)
     },
     async filter(query = {}, sort) {
       let q = supabase.from(table).select('*').match(query)
@@ -26,22 +30,24 @@ function entity(table) {
       if (s) q = q.order(s.column, { ascending: s.ascending })
       const { data, error } = await q
       if (error) throw error
-      return data
+      return data.map(tr)
     },
     async get(id) {
       const { data, error } = await supabase.from(table).select('*').eq('id', id).single()
       if (error) throw error
-      return data
+      return tr(data)
     },
     async create(values) {
-      const { data, error } = await supabase.from(table).insert(values).select().single()
+      const { data, error } = await supabase.from(table).insert(untranslateValues(table, values)).select().single()
       if (error) throw error
-      return data
+      translateSavedRow(table, data)
+      return tr(data)
     },
     async update(id, values) {
-      const { data, error } = await supabase.from(table).update(values).eq('id', id).select().single()
+      const { data, error } = await supabase.from(table).update(untranslateValues(table, values)).eq('id', id).select().single()
       if (error) throw error
-      return data
+      translateSavedRow(table, data)
+      return tr(data)
     },
     async delete(id) {
       const { error } = await supabase.from(table).delete().eq('id', id)
